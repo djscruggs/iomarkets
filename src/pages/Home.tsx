@@ -1,29 +1,144 @@
-import { Link } from 'react-router'
-import { SignedIn, SignedOut } from '@clerk/clerk-react'
+import { useState, useMemo } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { InvestmentCard } from '../components/InvestmentCard'
+import { mockInvestments } from '../data/mockInvestments'
+import { Investment } from '../types/investment'
+
+const ITEMS_PER_PAGE = 50
+
+type FilterType = 'all' | 'real-estate' | 'private-equity'
 
 export default function Home() {
+  const [currentPage, setCurrentPage] = useState(1)
+  const [filter, setFilter] = useState<FilterType>('all')
+
+  // Filter investments based on selected filter
+  const filteredInvestments = useMemo(() => {
+    if (filter === 'all') return mockInvestments
+    return mockInvestments.filter(inv => inv.type === filter)
+  }, [filter])
+
+  const totalPages = Math.ceil(filteredInvestments.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const currentInvestments = filteredInvestments.slice(startIndex, endIndex)
+
+  const handleFilterChange = (newFilter: FilterType) => {
+    setFilter(newFilter)
+    setCurrentPage(1) // Reset to first page when filter changes
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Welcome to IO Markets
-        </h1>
-        <p className="text-xl text-gray-600 mb-8">
-          Your platform for market insights and analysis
-        </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Investment Marketplace
+          </h1>
+          <p className="text-lg text-gray-600">
+            Discover exclusive real estate and private equity opportunities
+          </p>
+        </div>
 
-        <SignedOut>
-          <p className="text-gray-500">Please sign in to access the dashboard</p>
-        </SignedOut>
+        {/* Filters */}
+        <div className="mb-6 flex gap-4 items-center">
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleFilterChange('all')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                filter === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+              }`}
+            >
+              All Deals
+            </button>
+            <button
+              onClick={() => handleFilterChange('real-estate')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                filter === 'real-estate'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+              }`}
+            >
+              Real Estate
+            </button>
+            <button
+              onClick={() => handleFilterChange('private-equity')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                filter === 'private-equity'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+              }`}
+            >
+              Private Equity
+            </button>
+          </div>
+          <div className="ml-auto text-sm text-gray-600">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredInvestments.length)} of {filteredInvestments.length} investments
+          </div>
+        </div>
 
-        <SignedIn>
-          <Link
-            to="/dashboard"
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Go to Dashboard
-          </Link>
-        </SignedIn>
+        {/* Investment Grid - 5 across */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-8">
+          {currentInvestments.map(investment => (
+            <InvestmentCard key={investment.id} investment={investment} />
+          ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous
+            </button>
+
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => {
+                    setCurrentPage(page)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  className={`w-10 h-10 rounded-lg font-medium ${
+                    currentPage === page
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
