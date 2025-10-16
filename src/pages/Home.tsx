@@ -57,7 +57,7 @@ export default function Home() {
           <div className="flex gap-2">
             <button
               onClick={() => handleFilterChange('all')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
                 filter === 'all'
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
@@ -67,7 +67,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => handleFilterChange('real-estate')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
                 filter === 'real-estate'
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
@@ -77,7 +77,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => handleFilterChange('private-equity')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
                 filter === 'private-equity'
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
@@ -104,7 +104,7 @@ export default function Home() {
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               Previous
@@ -118,7 +118,7 @@ export default function Home() {
                     setCurrentPage(page)
                     window.scrollTo({ top: 0, behavior: 'smooth' })
                   }}
-                  className={`w-10 h-10 rounded-lg font-medium ${
+                  className={`w-10 h-10 rounded-lg font-medium cursor-pointer ${
                     currentPage === page
                       ? 'bg-blue-600 text-white'
                       : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -132,7 +132,7 @@ export default function Home() {
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               Next
               <ChevronRight className="w-4 h-4" />

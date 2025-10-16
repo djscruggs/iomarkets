@@ -3,6 +3,7 @@ import {
   Navigate,
   Link,
   useLocation,
+  useNavigate,
 } from "react-router";
 import { useAuth, SignIn } from "@clerk/clerk-react";
 import { useEffect } from "react";
@@ -19,6 +20,7 @@ export default function InvestmentDetail() {
   const { id } = useParams<{ id: string }>();
   const { isSignedIn, isLoaded } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Find the investment
   const investment = mockInvestments.find((inv) => inv.id === id);
@@ -226,12 +228,12 @@ export default function InvestmentDetail() {
             </div>
 
             {/* CTA Button */}
-            <div className="flex gap-4">
-              <button className="flex-1 bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg">
-                Express Interest
-              </button>
-              <button className="px-8 py-4 rounded-lg border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-semibold text-lg">
-                Download Prospectus
+            <div>
+              <button
+                onClick={() => navigate(`/investment/${id}/due-diligence`)}
+                className="w-full bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg cursor-pointer"
+              >
+                View Due Diligence
               </button>
             </div>
           </div>

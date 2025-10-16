@@ -12,7 +12,7 @@ export default function Dashboard() {
             Please sign in to view the dashboard
           </h2>
           <SignInButton mode="modal">
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 cursor-pointer">
               Sign In
             </button>
           </SignInButton>

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import InvestmentDetail from './pages/InvestmentDetail'
+import DueDiligence from './pages/DueDiligence'
 
 function App() {
   const navigate = useNavigate()
@@ -34,7 +35,7 @@ function App() {
             <div>
               <SignedOut>
                 <SignInButton mode="modal">
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer">
                     Sign In
                   </button>
                 </SignInButton>
@@ -52,6 +53,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/investment/:id" element={<InvestmentDetail />} />
+          <Route path="/investment/:id/due-diligence" element={<DueDiligence />} />
         </Routes>
       </main>
     </div>
