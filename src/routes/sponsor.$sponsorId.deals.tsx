@@ -1,23 +1,31 @@
-import { useParams, useNavigate } from 'react-router'
+import { useParams, useNavigate, useLoaderData, LoaderFunctionArgs } from 'react-router-dom'
 import { mockSponsors } from '../data/mockDueDiligence'
 import { mockInvestments } from '../data/mockInvestments'
 import { Mail, Phone, Briefcase, DollarSign, ExternalLink } from 'lucide-react'
 import { Sponsor } from '../types/dueDiligence'
 
-export default function SponsorDeals() {
-  const { sponsorId } = useParams<{ sponsorId: string }>()
-  const navigate = useNavigate()
+interface SponsorDealsLoaderData {
+  sponsor: Sponsor | null
+}
 
+export async function loader({ params }: LoaderFunctionArgs): Promise<SponsorDealsLoaderData> {
   // Find sponsor across all investment sponsor lists
-  let sponsor: Sponsor | undefined
+  let sponsor: Sponsor | null = null
   for (const investmentId in mockSponsors) {
     const sponsorList = mockSponsors[investmentId]
-    const found = sponsorList.find(s => s.id === sponsorId)
+    const found = sponsorList.find(s => s.id === params.sponsorId)
     if (found) {
       sponsor = found
       break
     }
   }
+  return { sponsor }
+}
+
+export default function SponsorDeals() {
+  const { sponsorId } = useParams<{ sponsorId: string }>()
+  const { sponsor } = useLoaderData() as SponsorDealsLoaderData
+  const navigate = useNavigate()
 
   if (!sponsor) {
     return (

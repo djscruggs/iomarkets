@@ -4,7 +4,9 @@ import {
   Link,
   useLocation,
   useNavigate,
-} from "react-router";
+  useLoaderData,
+  LoaderFunctionArgs,
+} from "react-router-dom";
 import { useAuth, SignIn } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import {
@@ -15,15 +17,23 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { mockInvestments } from "../data/mockInvestments";
+import { Investment } from "../types/investment";
+
+interface InvestmentDetailLoaderData {
+  investment: Investment | null;
+}
+
+export async function loader({ params }: LoaderFunctionArgs): Promise<InvestmentDetailLoaderData> {
+  const investment = mockInvestments.find((inv) => inv.id === params.id) || null;
+  return { investment };
+}
 
 export default function InvestmentDetail() {
   const { id } = useParams<{ id: string }>();
+  const { investment } = useLoaderData() as InvestmentDetailLoaderData;
   const { isSignedIn, isLoaded } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Find the investment
-  const investment = mockInvestments.find((inv) => inv.id === id);
 
   // Store current URL when user is not signed in (Step 2)
   useEffect(() => {

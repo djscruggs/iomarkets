@@ -1,21 +1,33 @@
 import { useState } from 'react'
-import { useParams, Navigate, Link } from 'react-router'
+import { useParams, Navigate, Link, useLoaderData, LoaderFunctionArgs } from 'react-router-dom'
 import { ArrowLeft, FileText, Image as ImageIcon, Video } from 'lucide-react'
 import { mockInvestments } from '../data/mockInvestments'
 import { getSponsorsForInvestment, getAssetsForInvestment } from '../data/mockDueDiligence'
-import { DueDiligenceAsset } from '../types/dueDiligence'
+import { DueDiligenceAsset, Sponsor } from '../types/dueDiligence'
 import { DealHeader } from '../components/DealHeader'
 import { SponsorCard } from '../components/SponsorCard'
 import { AssetViewer } from '../components/AssetViewer'
 import { AIChat } from '../components/AIChat'
+import { Investment } from '../types/investment'
+
+interface DueDiligenceLoaderData {
+  investment: Investment | null
+  sponsors: Sponsor[]
+  assets: DueDiligenceAsset[]
+}
+
+export async function loader({ params }: LoaderFunctionArgs): Promise<DueDiligenceLoaderData> {
+  const investment = mockInvestments.find((inv) => inv.id === params.id) || null
+  const sponsors = params.id ? getSponsorsForInvestment(params.id) : []
+  const assets = params.id ? getAssetsForInvestment(params.id) : []
+
+  return { investment, sponsors, assets }
+}
 
 export default function DueDiligence() {
   const { id } = useParams<{ id: string }>()
+  const { investment, sponsors, assets } = useLoaderData() as DueDiligenceLoaderData
   const [selectedAsset, setSelectedAsset] = useState<DueDiligenceAsset | null>(null)
-
-  const investment = mockInvestments.find((inv) => inv.id === id)
-  const sponsors = id ? getSponsorsForInvestment(id) : []
-  const assets = id ? getAssetsForInvestment(id) : []
 
   if (!investment || !id) {
     return <Navigate to="/" replace />

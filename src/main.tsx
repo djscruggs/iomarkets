@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { BrowserRouter } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
-import App from "./App";
+import routes from "./routes";
 
 const clerkPubKey =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
@@ -19,12 +19,12 @@ if (!clerkPubKey.startsWith("pk_")) {
   throw new Error("Invalid Clerk Publishable Key - must start with 'pk_'");
 }
 
+const router = createBrowserRouter(routes);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ClerkProvider publishableKey={clerkPubKey}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </ClerkProvider>
   </StrictMode>
 );

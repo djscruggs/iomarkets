@@ -1,13 +1,24 @@
-import { useParams, useNavigate } from 'react-router'
+import { useParams, useNavigate, useLoaderData, LoaderFunctionArgs } from 'react-router-dom'
 import { ExternalLink, ArrowLeft } from 'lucide-react'
 
-export default function DealPayouts() {
-  const { sponsorId, dealId } = useParams<{ sponsorId: string; dealId: string }>()
-  const navigate = useNavigate()
+interface DealPayoutsLoaderData {
+  dealIndex: number
+  sponsorId: string
+  dealId: string
+}
 
-  // Parse deal information from dealId
-  // Format: sponsorId-deal-index
-  const dealIndex = parseInt(dealId?.split('-').pop() || '0')
+export async function loader({ params }: LoaderFunctionArgs): Promise<DealPayoutsLoaderData> {
+  const dealIndex = parseInt(params.dealId?.split('-').pop() || '0')
+  return {
+    dealIndex,
+    sponsorId: params.sponsorId || '',
+    dealId: params.dealId || ''
+  }
+}
+
+export default function DealPayouts() {
+  const { sponsorId, dealId, dealIndex } = useLoaderData() as DealPayoutsLoaderData
+  const navigate = useNavigate()
 
   // Mock deal data - in real app this would come from the deal
   const dealTypes = ['real-estate', 'private-equity'] as const

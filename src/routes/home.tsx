@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useLoaderData, LoaderFunctionArgs } from 'react-router-dom'
 import { InvestmentCard } from '../components/InvestmentCard'
 import { mockInvestments } from '../data/mockInvestments'
 import { Investment } from '../types/investment'
@@ -8,15 +9,25 @@ const ITEMS_PER_PAGE = 50
 
 type FilterType = 'all' | 'real-estate' | 'private-equity'
 
+interface HomeLoaderData {
+  investments: Investment[]
+}
+
+export async function loader({ request }: LoaderFunctionArgs): Promise<HomeLoaderData> {
+  // In a real app, this would fetch from an API
+  return { investments: mockInvestments }
+}
+
 export default function Home() {
+  const { investments } = useLoaderData() as HomeLoaderData
   const [currentPage, setCurrentPage] = useState(1)
   const [filter, setFilter] = useState<FilterType>('all')
 
   // Filter investments based on selected filter
   const filteredInvestments = useMemo(() => {
-    if (filter === 'all') return mockInvestments
-    return mockInvestments.filter(inv => inv.type === filter)
-  }, [filter])
+    if (filter === 'all') return investments
+    return investments.filter(inv => inv.type === filter)
+  }, [filter, investments])
 
   const totalPages = Math.ceil(filteredInvestments.length / ITEMS_PER_PAGE)
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
