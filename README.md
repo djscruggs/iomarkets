@@ -1,4 +1,4 @@
-# IO Markets
+# IoMarkets
 
 A modern web application built with Vite, React Router 7, Tailwind CSS, and Clerk Auth.
 

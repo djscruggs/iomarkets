@@ -157,18 +157,15 @@ export const mockDueDiligenceAssets: Record<string, DueDiligenceAsset[]> = {
 
 // Default fallback data for investments without specific mock data
 export const getSponsorsForInvestment = (investmentId: string): Sponsor[] => {
-  return mockSponsors[investmentId] || [
-    {
-      id: 'default-sponsor',
-      name: 'John Smith',
-      email: 'jsmith@sponsor.com',
-      phone: '+1 (555) 555-0100',
-      linkedInUrl: 'https://linkedin.com/in/john-smith',
-      photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop',
-      totalDeals: 15,
-      totalValue: 250000000
-    }
-  ]
+  // If investment has specific sponsors, return them
+  if (mockSponsors[investmentId]) {
+    return mockSponsors[investmentId]
+  }
+
+  // Otherwise, return one of the existing sponsors as fallback (cycle through them)
+  const sponsorKeys = Object.keys(mockSponsors)
+  const fallbackKey = sponsorKeys[parseInt(investmentId) % sponsorKeys.length] || '1'
+  return mockSponsors[fallbackKey]
 }
 
 export const getAssetsForInvestment = (investmentId: string): DueDiligenceAsset[] => {

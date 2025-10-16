@@ -27,6 +27,10 @@ RUN npm ci --include=dev
 # Copy application code
 COPY . .
 
+# Accept build arguments for environment variables
+ARG VITE_CLERK_PUBLISHABLE_KEY
+ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+
 # Build application
 RUN npm run build
 

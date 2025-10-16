@@ -6,8 +6,6 @@
 app = 'iomarkets'
 primary_region = 'dfw'
 
-[build]
-
 [http_service]
   internal_port = 80
   force_https = true

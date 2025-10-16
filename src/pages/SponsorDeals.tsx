@@ -1,4 +1,4 @@
-import { useParams } from 'react-router'
+import { useParams, useNavigate } from 'react-router'
 import { mockSponsors } from '../data/mockDueDiligence'
 import { mockInvestments } from '../data/mockInvestments'
 import { Mail, Phone, Briefcase, DollarSign, ExternalLink } from 'lucide-react'
@@ -6,6 +6,7 @@ import { Sponsor } from '../types/dueDiligence'
 
 export default function SponsorDeals() {
   const { sponsorId } = useParams<{ sponsorId: string }>()
+  const navigate = useNavigate()
 
   // Find sponsor across all investment sponsor lists
   let sponsor: Sponsor | undefined
@@ -231,6 +232,7 @@ export default function SponsorDeals() {
                 <div
                   key={deal.id}
                   className="px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => navigate(`/sponsor/${sponsorId}/deals/${deal.id}`)}
                 >
                   <div className="flex items-center gap-4">
                     {/* Thumbnail */}
