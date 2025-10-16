@@ -1,11 +1,14 @@
 import { Sponsor } from '../types/dueDiligence'
 import { Mail, Phone, Briefcase, DollarSign } from 'lucide-react'
+import { useNavigate } from 'react-router'
 
 interface SponsorCardProps {
   sponsor: Sponsor
 }
 
 export function SponsorCard({ sponsor }: SponsorCardProps) {
+  const navigate = useNavigate()
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -14,6 +17,10 @@ export function SponsorCard({ sponsor }: SponsorCardProps) {
       minimumFractionDigits: 0,
       maximumFractionDigits: 1,
     }).format(amount)
+  }
+
+  const handleDealsClick = () => {
+    navigate(`/sponsor/${sponsor.id}/deals`)
   }
 
   return (
@@ -58,7 +65,10 @@ export function SponsorCard({ sponsor }: SponsorCardProps) {
         </div>
       </div>
 
-      <div className="pt-3 border-t border-gray-100 grid grid-cols-2 gap-3">
+      <div
+        className="pt-3 border-t border-gray-100 grid grid-cols-2 gap-3 cursor-pointer hover:bg-gray-50 -mx-4 px-4 -mb-4 pb-4 rounded-b-lg transition-colors"
+        onClick={handleDealsClick}
+      >
         <div>
           <div className="flex items-center gap-1 text-gray-600 mb-1">
             <Briefcase className="w-3 h-3" />

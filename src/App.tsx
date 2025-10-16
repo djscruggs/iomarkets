@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import InvestmentDetail from './pages/InvestmentDetail'
 import DueDiligence from './pages/DueDiligence'
+import SponsorDeals from './pages/SponsorDeals'
 
 function App() {
   const navigate = useNavigate()
@@ -54,6 +55,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/investment/:id" element={<InvestmentDetail />} />
           <Route path="/investment/:id/due-diligence" element={<DueDiligence />} />
+          <Route path="/sponsor/:sponsorId/deals" element={<SponsorDeals />} />
         </Routes>
       </main>
     </div>
