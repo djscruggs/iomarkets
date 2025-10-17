@@ -1,25 +1,32 @@
-import { createRequestHandler } from "@react-router/node";
-import { installGlobals } from "@react-router/node";
 import { createServer } from "node:http";
-
-installGlobals();
+import { Readable } from "node:stream";
 
 const port = process.env.PORT || 3000;
 
-// Dynamically import the server build
+// Import the server build - it exports a default handler function
 const build = await import("./build/server/index.js");
-const handler = createRequestHandler(build);
+const handler = build.default;
 
 const server = createServer(async (req, res) => {
   try {
-    const request = new Request(`http://${req.headers.host}${req.url}`, {
+    // Convert Node.js request to Web Request
+    const url = new URL(req.url, `http://${req.headers.host}`);
+
+    let body;
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      body = Readable.toWeb(req);
+    }
+
+    const request = new Request(url.href, {
       method: req.method,
       headers: req.headers,
-      body: req.method !== "GET" && req.method !== "HEAD" ? req : undefined,
+      body,
     });
 
+    // Call the React Router handler
     const response = await handler(request);
 
+    // Convert Web Response to Node.js response
     res.writeHead(response.status, Object.fromEntries(response.headers));
 
     if (response.body) {
