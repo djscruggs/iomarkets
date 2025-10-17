@@ -4,9 +4,9 @@
 ARG NODE_VERSION=24.7.0
 FROM node:${NODE_VERSION}-slim AS base
 
-LABEL fly_launch_runtime="Vite"
+LABEL fly_launch_runtime="React Router"
 
-# Vite app lives here
+# React Router app lives here
 WORKDIR /app
 
 # Set production environment
@@ -39,11 +39,11 @@ RUN npm prune --omit=dev
 
 
 # Final stage for app image
-FROM nginx
+FROM base
 
-# Copy built application
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy built application from build stage
+COPY --from=build /app /app
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 80
-CMD [ "/usr/sbin/nginx", "-g", "daemon off;" ]
+EXPOSE 3000
+CMD [ "npm", "run", "start" ]
