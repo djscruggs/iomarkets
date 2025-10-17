@@ -6,6 +6,7 @@ import {
   useNavigate,
   useLoaderData,
   LoaderFunctionArgs,
+  MetaFunction,
 } from "react-router-dom";
 import { useAuth, SignIn } from "@clerk/clerk-react";
 import { useEffect } from "react";
@@ -22,6 +23,19 @@ import { Investment } from "../types/investment";
 interface InvestmentDetailLoaderData {
   investment: Investment | null;
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data?.investment) {
+    return [
+      { title: 'Investment Not Found - IOMarkets' },
+    ];
+  }
+
+  return [
+    { title: `${data.investment.name} - IOMarkets` },
+    { name: 'description', content: `${data.investment.type === 'real-estate' ? 'Real Estate' : 'Private Equity'} investment opportunity with ${data.investment.projectedReturn}% projected IRR. Managed by ${data.investment.sponsor}.` },
+  ];
+};
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<InvestmentDetailLoaderData> {
   const investment = mockInvestments.find((inv) => inv.id === params.id) || null;

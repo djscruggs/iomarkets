@@ -1,9 +1,7 @@
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import { hydrateRoot } from "react-dom/client";
+import { HydratedRouter } from "react-router/dom";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./index.css";
-import routes from "./routes";
 
 const clerkPubKey =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
@@ -19,12 +17,11 @@ if (!clerkPubKey.startsWith("pk_")) {
   throw new Error("Invalid Clerk Publishable Key - must start with 'pk_'");
 }
 
-const router = createBrowserRouter(routes);
-
-createRoot(document.getElementById("root")!).render(
+hydrateRoot(
+  document,
   <StrictMode>
     <ClerkProvider publishableKey={clerkPubKey}>
-      <RouterProvider router={router} />
+      <HydratedRouter />
     </ClerkProvider>
   </StrictMode>
 );

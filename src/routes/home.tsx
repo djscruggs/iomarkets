@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useLoaderData, LoaderFunctionArgs } from 'react-router-dom'
+import { useLoaderData, LoaderFunctionArgs, MetaFunction } from 'react-router-dom'
 import { InvestmentCard } from '../components/InvestmentCard'
 import { mockInvestments } from '../data/mockInvestments'
 import { Investment } from '../types/investment'
@@ -11,6 +11,13 @@ type FilterType = 'all' | 'real-estate' | 'private-equity'
 
 interface HomeLoaderData {
   investments: Investment[]
+}
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Investment Marketplace - IOMarkets' },
+    { name: 'description', content: 'Discover exclusive real estate and private equity investment opportunities on IOMarkets.' },
+  ]
 }
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<HomeLoaderData> {

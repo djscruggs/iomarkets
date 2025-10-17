@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useLoaderData, LoaderFunctionArgs } from 'react-router-dom'
+import { useParams, useNavigate, useLoaderData, LoaderFunctionArgs, MetaFunction } from 'react-router-dom'
 import { mockSponsors } from '../data/mockDueDiligence'
 import { mockInvestments } from '../data/mockInvestments'
 import { Mail, Phone, Briefcase, DollarSign, ExternalLink } from 'lucide-react'
@@ -7,6 +7,19 @@ import { Sponsor } from '../types/dueDiligence'
 interface SponsorDealsLoaderData {
   sponsor: Sponsor | null
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data?.sponsor) {
+    return [
+      { title: 'Sponsor Not Found - IOMarkets' },
+    ];
+  }
+
+  return [
+    { title: `${data.sponsor.name} - Deals Portfolio - IOMarkets` },
+    { name: 'description', content: `View all ${data.sponsor.totalDeals} investment deals managed by ${data.sponsor.name} on IOMarkets.` },
+  ];
+};
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<SponsorDealsLoaderData> {
   // Find sponsor across all investment sponsor lists

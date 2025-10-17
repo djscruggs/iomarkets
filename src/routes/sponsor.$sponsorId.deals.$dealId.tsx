@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useLoaderData, LoaderFunctionArgs } from 'react-router-dom'
+import { useParams, useNavigate, useLoaderData, LoaderFunctionArgs, MetaFunction } from 'react-router-dom'
 import { ExternalLink, ArrowLeft } from 'lucide-react'
 
 interface DealPayoutsLoaderData {
@@ -6,6 +6,13 @@ interface DealPayoutsLoaderData {
   sponsorId: string
   dealId: string
 }
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Deal Payouts - IOMarkets' },
+    { name: 'description', content: 'View detailed payout history and LP distributions for this investment deal.' },
+  ];
+};
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<DealPayoutsLoaderData> {
   const dealIndex = parseInt(params.dealId?.split('-').pop() || '0')

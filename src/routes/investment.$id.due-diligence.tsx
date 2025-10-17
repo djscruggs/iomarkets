@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, Navigate, Link, useLoaderData, LoaderFunctionArgs } from 'react-router-dom'
+import { useParams, Navigate, Link, useLoaderData, LoaderFunctionArgs, MetaFunction } from 'react-router-dom'
 import { ArrowLeft, FileText, Image as ImageIcon, Video } from 'lucide-react'
 import { mockInvestments } from '../data/mockInvestments'
 import { getSponsorsForInvestment, getAssetsForInvestment } from '../data/mockDueDiligence'
@@ -15,6 +15,19 @@ interface DueDiligenceLoaderData {
   sponsors: Sponsor[]
   assets: DueDiligenceAsset[]
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data?.investment) {
+    return [
+      { title: 'Due Diligence - IOMarkets' },
+    ];
+  }
+
+  return [
+    { title: `Due Diligence - ${data.investment.name} - IOMarkets` },
+    { name: 'description', content: `Review due diligence materials, documents, and sponsor information for ${data.investment.name}.` },
+  ];
+};
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<DueDiligenceLoaderData> {
   const investment = mockInvestments.find((inv) => inv.id === params.id) || null

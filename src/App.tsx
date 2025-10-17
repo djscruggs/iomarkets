@@ -1,7 +1,7 @@
 import { Routes, Route, useNavigate } from 'react-router'
 import { useAuth } from '@clerk/clerk-react'
 import { useEffect } from 'react'
-import { Layout } from './components/Layout'
+import { Layout } from './components/layouts/Main'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import InvestmentDetail from './pages/InvestmentDetail'
