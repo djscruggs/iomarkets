@@ -62,7 +62,7 @@ fly secrets set VITE_CLERK_PUBLISHABLE_KEY="pk_test_your-key"
 fly secrets set GOOGLE_CREDENTIALS_JSON="$(cat google-credentials.json)"
 
 # Google Cloud config
-fly secrets set GCP_PROJECT_ID="cardlessid"
+fly secrets set GCP_PROJECT_ID="iomarkets-475622"
 fly secrets set CLOUD_STORAGE_BUCKET="iomarkets-dd"
 fly secrets set DATA_STORE_ID_PREFIX="iomarkets-dd-"
 fly secrets set GEMINI_MODEL_NAME="gemini-2.0-flash-exp"
