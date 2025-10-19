@@ -85,3 +85,35 @@ AFTER UPDATE ON due_diligence_assets
 BEGIN
   UPDATE due_diligence_assets SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;
+
+-- RAG: Track Data Store IDs per investment
+CREATE TABLE IF NOT EXISTS investment_data_stores (
+  investment_id TEXT PRIMARY KEY,
+  data_store_id TEXT NOT NULL UNIQUE,
+  gcs_folder_path TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  indexed_at DATETIME,
+  document_count INTEGER DEFAULT 0,
+  status TEXT CHECK(status IN ('pending', 'indexing', 'ready', 'error')) DEFAULT 'pending',
+  error_message TEXT,
+  FOREIGN KEY (investment_id) REFERENCES investments(id) ON DELETE CASCADE
+);
+
+-- RAG: Track indexing status of individual documents
+CREATE TABLE IF NOT EXISTS indexed_documents (
+  id TEXT PRIMARY KEY,
+  investment_id TEXT NOT NULL,
+  asset_id TEXT NOT NULL,
+  gcs_uri TEXT NOT NULL,
+  indexed_at DATETIME,
+  status TEXT CHECK(status IN ('pending', 'indexed', 'failed')) DEFAULT 'pending',
+  error_message TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (investment_id) REFERENCES investments(id) ON DELETE CASCADE,
+  FOREIGN KEY (asset_id) REFERENCES due_diligence_assets(id) ON DELETE CASCADE
+);
+
+-- RAG Indexes
+CREATE INDEX IF NOT EXISTS idx_investment_data_stores_status ON investment_data_stores(status);
+CREATE INDEX IF NOT EXISTS idx_indexed_documents_investment_id ON indexed_documents(investment_id);
+CREATE INDEX IF NOT EXISTS idx_indexed_documents_status ON indexed_documents(status);

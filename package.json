@@ -15,10 +15,15 @@
     "db:test": "tsx scripts/test-db.ts",
     "db:generate-seed": "tsx scripts/generate-seed-sql.ts",
     "db:export": "tsx scripts/export-db-to-seed.ts",
-    "db:add-holiday-terrace": "tsx scripts/add-holiday-terrace.ts"
+    "db:add-holiday-terrace": "tsx scripts/add-holiday-terrace.ts",
+    "rag:index": "tsx scripts/index-investment-documents.ts",
+    "rag:status": "tsx scripts/check-indexing-status.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.53.0",
+    "@google-cloud/discoveryengine": "^2.5.1",
+    "@google-cloud/storage": "^7.17.2",
+    "@google-cloud/vertexai": "^1.10.0",
     "@react-router/node": "^7.9.4",
     "@react-router/serve": "^7.9.4",
     "better-sqlite3": "^12.4.1",

@@ -33,3 +33,4 @@ db/*.db-wal
 *.njsproj
 *.sln
 *.sw?
+google-credentials.json
