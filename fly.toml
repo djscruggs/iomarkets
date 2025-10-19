@@ -6,6 +6,13 @@
 app = 'iomarkets'
 primary_region = 'dfw'
 
+[env]
+  DATABASE_PATH = "/data/iomarkets.db"
+
+[mounts]
+  source = "iomarkets_data"
+  destination = "/data"
+
 [http_service]
   internal_port = 3000
   force_https = true

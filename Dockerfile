@@ -16,9 +16,9 @@ ENV NODE_ENV="production"
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Install packages needed to build node modules
+# Install packages needed to build node modules and SQLite
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3 sqlite3
 
 # Install node modules
 COPY package-lock.json package.json ./
@@ -40,6 +40,11 @@ RUN npm prune --omit=dev
 
 # Final stage for app image
 FROM base
+
+# Install SQLite3 runtime (needed for database operations)
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y sqlite3 && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy built application from build stage
 COPY --from=build /app /app

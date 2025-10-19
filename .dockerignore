@@ -19,6 +19,11 @@ build
 .env.local
 .env.production
 
+# Database (don't copy local DB to Docker image)
+db/*.db
+db/*.db-shm
+db/*.db-wal
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
