@@ -119,7 +119,10 @@ export function AIChat({ autoFocus = false, startExpanded = false }: AIChatProps
       className={`bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col transition-all duration-300 ${getHeight()}`}
     >
       {/* Header */}
-      <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+      <div
+        className="px-4 py-2 border-b border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
         <div className="flex items-center gap-2">
           <Bot className="w-4 h-4 text-blue-600" />
           <h3 className="font-semibold text-gray-900 text-sm">
@@ -129,7 +132,10 @@ export function AIChat({ autoFocus = false, startExpanded = false }: AIChatProps
         <div className="flex items-center gap-2">
           {hasUserMessages && (
             <button
-              onClick={handleDownloadConversation}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownloadConversation();
+              }}
               className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
               title="Download Conversation"
             >
@@ -139,7 +145,10 @@ export function AIChat({ autoFocus = false, startExpanded = false }: AIChatProps
           )}
           {hasInteracted && !isCollapsed && (
             <button
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
               className="text-gray-600 hover:text-gray-800 transition-colors cursor-pointer p-1"
               title={isExpanded ? "Normal Size" : "Expand to Half Screen"}
             >
@@ -150,17 +159,13 @@ export function AIChat({ autoFocus = false, startExpanded = false }: AIChatProps
               )}
             </button>
           )}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="text-gray-600 hover:text-gray-800 transition-colors cursor-pointer p-1"
-            title={isCollapsed ? "Expand" : "Collapse"}
-          >
+          <div className="text-gray-600 p-1">
             {isCollapsed ? (
               <ChevronUp className="w-4 h-4" />
             ) : (
               <ChevronDown className="w-4 h-4" />
             )}
-          </button>
+          </div>
         </div>
       </div>
 
