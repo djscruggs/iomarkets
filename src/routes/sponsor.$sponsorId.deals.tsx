@@ -1,6 +1,5 @@
 import { useParams, useNavigate, useLoaderData, LoaderFunctionArgs, MetaFunction } from 'react-router-dom'
-import { mockSponsors } from '../data/mockDueDiligence'
-import { mockInvestments } from '../data/mockInvestments'
+import { getSponsorById } from '../lib/queries'
 import { Mail, Phone, Briefcase, DollarSign, ExternalLink } from 'lucide-react'
 import { Sponsor } from '../types/dueDiligence'
 
@@ -22,16 +21,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<SponsorDealsLoaderData> {
-  // Find sponsor across all investment sponsor lists
-  let sponsor: Sponsor | null = null
-  for (const investmentId in mockSponsors) {
-    const sponsorList = mockSponsors[investmentId]
-    const found = sponsorList.find(s => s.id === params.sponsorId)
-    if (found) {
-      sponsor = found
-      break
-    }
-  }
+  const sponsor = params.sponsorId ? getSponsorById(params.sponsorId) || null : null
   return { sponsor }
 }
 

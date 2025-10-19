@@ -5,6 +5,8 @@ import { ClerkProvider, SignedOut, SignInButton, SignedIn, UserButton, useAuth, 
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useLoaderData, useParams, useLocation, Navigate, Link as Link$1 } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ArrowLeft, DollarSign, TrendingUp, Calendar, MapPin, Mail, Phone, Briefcase, FileText, Image, Video, Bot, Download, Send, ExternalLink } from "lucide-react";
+import Database from "better-sqlite3";
+import { join } from "path";
 const clerkPubKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || "pk_test_YXJ0aXN0aWMtZWxrLTI2LmNsZXJrLmFjY291bnRzLmRldiQ";
 async function handleRequest(request, responseStatusCode, responseHeaders, entryContext, loadContext) {
   const body = await renderToReadableStream(
@@ -192,633 +194,107 @@ function InvestmentCard({ investment }) {
     }
   );
 }
-const mockInvestments = [
-  {
-    id: "1",
-    name: "Downtown Austin Mixed-Use Development",
-    sponsor: "Urban Capital Partners",
-    targetRaise: 5e6,
-    amountRaised: 375e4,
-    imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Austin, TX",
-    minInvestment: 5e4,
-    projectedReturn: 18.5,
-    term: "5 years"
-  },
-  {
-    id: "2",
-    name: "SaaS Growth Fund III",
-    sponsor: "TechVentures Capital",
-    targetRaise: 1e7,
-    amountRaised: 85e5,
-    imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 1e5,
-    projectedReturn: 25,
-    term: "7 years"
-  },
-  {
-    id: "3",
-    name: "Miami Waterfront Residential Tower",
-    sponsor: "Coastal Development Group",
-    targetRaise: 15e6,
-    amountRaised: 12e6,
-    imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Miami, FL",
-    minInvestment: 75e3,
-    projectedReturn: 16,
-    term: "4 years"
-  },
-  {
-    id: "4",
-    name: "Healthcare Innovation Portfolio",
-    sponsor: "LifeScience Ventures",
-    targetRaise: 8e6,
-    amountRaised: 56e5,
-    imageUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 5e4,
-    projectedReturn: 22,
-    term: "6 years"
-  },
-  {
-    id: "5",
-    name: "Denver Industrial Park",
-    sponsor: "Midwest Industrial REIT",
-    targetRaise: 12e6,
-    amountRaised: 9e6,
-    imageUrl: "https://images.unsplash.com/photo-1565008576549-57569a49371d?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Denver, CO",
-    minInvestment: 1e5,
-    projectedReturn: 14.5,
-    term: "10 years"
-  },
-  {
-    id: "6",
-    name: "Consumer Brand Acquisition Fund",
-    sponsor: "Equity Growth Partners",
-    targetRaise: 6e6,
-    amountRaised: 42e5,
-    imageUrl: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 25e3,
-    projectedReturn: 20,
-    term: "5 years"
-  },
-  {
-    id: "7",
-    name: "Nashville Entertainment District",
-    sponsor: "Music City Developers",
-    targetRaise: 2e7,
-    amountRaised: 15e6,
-    imageUrl: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Nashville, TN",
-    minInvestment: 15e4,
-    projectedReturn: 19,
-    term: "6 years"
-  },
-  {
-    id: "8",
-    name: "Renewable Energy Investment Pool",
-    sponsor: "GreenFuture Capital",
-    targetRaise: 25e6,
-    amountRaised: 1875e4,
-    imageUrl: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 2e5,
-    projectedReturn: 15.5,
-    term: "8 years"
-  },
-  {
-    id: "9",
-    name: "Phoenix Luxury Apartments",
-    sponsor: "Desert Sky Properties",
-    targetRaise: 85e5,
-    amountRaised: 6375e3,
-    imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Phoenix, AZ",
-    minInvestment: 5e4,
-    projectedReturn: 17,
-    term: "5 years"
-  },
-  {
-    id: "10",
-    name: "AI/ML Startup Portfolio",
-    sponsor: "Frontier Tech Ventures",
-    targetRaise: 15e6,
-    amountRaised: 105e5,
-    imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 1e5,
-    projectedReturn: 30,
-    term: "7 years"
-  },
-  {
-    id: "11",
-    name: "Seattle Office Tower Renovation",
-    sponsor: "Pacific Northwest Holdings",
-    targetRaise: 18e6,
-    amountRaised: 135e5,
-    imageUrl: "https://images.unsplash.com/photo-1481253127861-534498168948?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Seattle, WA",
-    minInvestment: 125e3,
-    projectedReturn: 13.5,
-    term: "7 years"
-  },
-  {
-    id: "12",
-    name: "Fintech Growth Fund",
-    sponsor: "Digital Finance Ventures",
-    targetRaise: 12e6,
-    amountRaised: 96e5,
-    imageUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 75e3,
-    projectedReturn: 24,
-    term: "6 years"
-  },
-  {
-    id: "13",
-    name: "Atlanta Student Housing Complex",
-    sponsor: "Campus Living Partners",
-    targetRaise: 9e6,
-    amountRaised: 63e5,
-    imageUrl: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Atlanta, GA",
-    minInvestment: 5e4,
-    projectedReturn: 15,
-    term: "8 years"
-  },
-  {
-    id: "14",
-    name: "E-commerce Brand Rollup",
-    sponsor: "Digital Commerce Group",
-    targetRaise: 75e5,
-    amountRaised: 525e4,
-    imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 5e4,
-    projectedReturn: 21.5,
-    term: "5 years"
-  },
-  {
-    id: "15",
-    name: "Portland Retail Center",
-    sponsor: "Northwest Retail Properties",
-    targetRaise: 1e7,
-    amountRaised: 7e6,
-    imageUrl: "https://images.unsplash.com/photo-1555636222-cae831e670b3?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Portland, OR",
-    minInvestment: 1e5,
-    projectedReturn: 12.5,
-    term: "10 years"
-  },
-  {
-    id: "16",
-    name: "Biotech Seed Fund II",
-    sponsor: "BioInnovate Capital",
-    targetRaise: 2e7,
-    amountRaised: 14e6,
-    imageUrl: "https://images.unsplash.com/photo-1582719471137-c3967ffb1c42?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 15e4,
-    projectedReturn: 28,
-    term: "8 years"
-  },
-  {
-    id: "17",
-    name: "Charlotte Distribution Center",
-    sponsor: "Logistics Real Estate Fund",
-    targetRaise: 14e6,
-    amountRaised: 112e5,
-    imageUrl: "https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Charlotte, NC",
-    minInvestment: 1e5,
-    projectedReturn: 14,
-    term: "12 years"
-  },
-  {
-    id: "18",
-    name: "Manufacturing Automation Portfolio",
-    sponsor: "Industrial Growth Partners",
-    targetRaise: 11e6,
-    amountRaised: 77e5,
-    imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 75e3,
-    projectedReturn: 19.5,
-    term: "6 years"
-  },
-  {
-    id: "19",
-    name: "Boston Life Science Campus",
-    sponsor: "BioBay Developments",
-    targetRaise: 3e7,
-    amountRaised: 225e5,
-    imageUrl: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Boston, MA",
-    minInvestment: 2e5,
-    projectedReturn: 16.5,
-    term: "8 years"
-  },
-  {
-    id: "20",
-    name: "Cybersecurity Growth Fund",
-    sponsor: "SecureVentures Capital",
-    targetRaise: 16e6,
-    amountRaised: 128e5,
-    imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 1e5,
-    projectedReturn: 26,
-    term: "7 years"
-  },
-  {
-    id: "21",
-    name: "San Diego Beach Resort",
-    sponsor: "Coastal Hospitality Group",
-    targetRaise: 22e6,
-    amountRaised: 165e5,
-    imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "San Diego, CA",
-    minInvestment: 15e4,
-    projectedReturn: 18,
-    term: "6 years"
-  },
-  {
-    id: "22",
-    name: "Clean Tech Innovation Fund",
-    sponsor: "Sustainable Ventures",
-    targetRaise: 13e6,
-    amountRaised: 91e5,
-    imageUrl: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 75e3,
-    projectedReturn: 23,
-    term: "7 years"
-  },
-  {
-    id: "23",
-    name: "Dallas Multi-Family Portfolio",
-    sponsor: "Lone Star Residential",
-    targetRaise: 17e6,
-    amountRaised: 1275e4,
-    imageUrl: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Dallas, TX",
-    minInvestment: 1e5,
-    projectedReturn: 15.5,
-    term: "9 years"
-  },
-  {
-    id: "24",
-    name: "Food & Beverage Brands Fund",
-    sponsor: "Culinary Capital Partners",
-    targetRaise: 85e5,
-    amountRaised: 595e4,
-    imageUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 5e4,
-    projectedReturn: 20.5,
-    term: "5 years"
-  },
-  {
-    id: "25",
-    name: "Minneapolis Medical Office Building",
-    sponsor: "Healthcare Properties LLC",
-    targetRaise: 115e5,
-    amountRaised: 8625e3,
-    imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Minneapolis, MN",
-    minInvestment: 75e3,
-    projectedReturn: 13,
-    term: "15 years"
-  },
-  {
-    id: "26",
-    name: "EdTech Venture Portfolio",
-    sponsor: "Learning Innovation Ventures",
-    targetRaise: 95e5,
-    amountRaised: 665e4,
-    imageUrl: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 5e4,
-    projectedReturn: 24.5,
-    term: "6 years"
-  },
-  {
-    id: "27",
-    name: "Raleigh Tech Park Development",
-    sponsor: "Research Triangle Properties",
-    targetRaise: 19e6,
-    amountRaised: 1425e4,
-    imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Raleigh, NC",
-    minInvestment: 125e3,
-    projectedReturn: 17.5,
-    term: "7 years"
-  },
-  {
-    id: "28",
-    name: "Wellness & Fitness Brand Rollup",
-    sponsor: "Active Living Capital",
-    targetRaise: 7e6,
-    amountRaised: 49e5,
-    imageUrl: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 5e4,
-    projectedReturn: 22.5,
-    term: "5 years"
-  },
-  {
-    id: "29",
-    name: "Las Vegas Entertainment Venue",
-    sponsor: "Entertainment Properties Group",
-    targetRaise: 24e6,
-    amountRaised: 18e6,
-    imageUrl: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Las Vegas, NV",
-    minInvestment: 2e5,
-    projectedReturn: 19.5,
-    term: "8 years"
-  },
-  {
-    id: "30",
-    name: "Infrastructure Technology Fund",
-    sponsor: "Smart Cities Ventures",
-    targetRaise: 18e6,
-    amountRaised: 126e5,
-    imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 1e5,
-    projectedReturn: 21,
-    term: "8 years"
-  },
-  {
-    id: "31",
-    name: "Salt Lake City Ski Resort",
-    sponsor: "Mountain Hospitality Partners",
-    targetRaise: 28e6,
-    amountRaised: 21e6,
-    imageUrl: "https://images.unsplash.com/photo-1551524559-8af4e6624178?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Salt Lake City, UT",
-    minInvestment: 2e5,
-    projectedReturn: 16,
-    term: "10 years"
-  },
-  {
-    id: "32",
-    name: "Supply Chain Software Portfolio",
-    sponsor: "Logistics Tech Ventures",
-    targetRaise: 125e5,
-    amountRaised: 875e4,
-    imageUrl: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 75e3,
-    projectedReturn: 25.5,
-    term: "6 years"
-  },
-  {
-    id: "33",
-    name: "Philadelphia Historic Renovation",
-    sponsor: "Heritage Properties Fund",
-    targetRaise: 135e5,
-    amountRaised: 10125e3,
-    imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Philadelphia, PA",
-    minInvestment: 1e5,
-    projectedReturn: 14.5,
-    term: "6 years"
-  },
-  {
-    id: "34",
-    name: "Pet Care Services Consolidation",
-    sponsor: "Animal Wellness Capital",
-    targetRaise: 65e5,
-    amountRaised: 455e4,
-    imageUrl: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 5e4,
-    projectedReturn: 19,
-    term: "5 years"
-  },
-  {
-    id: "35",
-    name: "Tampa Bay Waterfront Development",
-    sponsor: "Gulf Coast Developers",
-    targetRaise: 21e6,
-    amountRaised: 1575e4,
-    imageUrl: "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Tampa, FL",
-    minInvestment: 15e4,
-    projectedReturn: 17,
-    term: "7 years"
-  },
-  {
-    id: "36",
-    name: "Automation & Robotics Fund",
-    sponsor: "NextGen Industry Partners",
-    targetRaise: 155e5,
-    amountRaised: 1085e4,
-    imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 1e5,
-    projectedReturn: 27,
-    term: "7 years"
-  },
-  {
-    id: "37",
-    name: "San Antonio Mixed-Use Plaza",
-    sponsor: "Alamo City Developments",
-    targetRaise: 165e5,
-    amountRaised: 12375e3,
-    imageUrl: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "San Antonio, TX",
-    minInvestment: 1e5,
-    projectedReturn: 15,
-    term: "8 years"
-  },
-  {
-    id: "38",
-    name: "Digital Media Production Fund",
-    sponsor: "Content Creation Ventures",
-    targetRaise: 8e6,
-    amountRaised: 56e5,
-    imageUrl: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 5e4,
-    projectedReturn: 23.5,
-    term: "5 years"
-  },
-  {
-    id: "39",
-    name: "Chicago High-Rise Apartments",
-    sponsor: "Windy City Properties",
-    targetRaise: 26e6,
-    amountRaised: 195e5,
-    imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Chicago, IL",
-    minInvestment: 175e3,
-    projectedReturn: 16.5,
-    term: "7 years"
-  },
-  {
-    id: "40",
-    name: "Aerospace Components Manufacturer",
-    sponsor: "Advanced Manufacturing Capital",
-    targetRaise: 145e5,
-    amountRaised: 1015e4,
-    imageUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 1e5,
-    projectedReturn: 20,
-    term: "8 years"
-  },
-  {
-    id: "41",
-    name: "Orlando Theme Park Adjacent Hotel",
-    sponsor: "Family Hospitality Partners",
-    targetRaise: 195e5,
-    amountRaised: 14625e3,
-    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Orlando, FL",
-    minInvestment: 125e3,
-    projectedReturn: 18.5,
-    term: "9 years"
-  },
-  {
-    id: "42",
-    name: "Sustainable Agriculture Tech",
-    sponsor: "AgTech Innovation Fund",
-    targetRaise: 11e6,
-    amountRaised: 77e5,
-    imageUrl: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 75e3,
-    projectedReturn: 22,
-    term: "6 years"
-  },
-  {
-    id: "43",
-    name: "Pittsburgh Innovation District",
-    sponsor: "Steel City Developments",
-    targetRaise: 175e5,
-    amountRaised: 13125e3,
-    imageUrl: "https://images.unsplash.com/photo-1486718448742-163732cd1544?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Pittsburgh, PA",
-    minInvestment: 125e3,
-    projectedReturn: 14,
-    term: "10 years"
-  },
-  {
-    id: "44",
-    name: "Gaming & Esports Portfolio",
-    sponsor: "Digital Entertainment Ventures",
-    targetRaise: 13e6,
-    amountRaised: 91e5,
-    imageUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 1e5,
-    projectedReturn: 29,
-    term: "6 years"
-  },
-  {
-    id: "45",
-    name: "Sacramento Senior Living Community",
-    sponsor: "ElderCare Properties Group",
-    targetRaise: 2e7,
-    amountRaised: 15e6,
-    imageUrl: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Sacramento, CA",
-    minInvestment: 15e4,
-    projectedReturn: 13.5,
-    term: "12 years"
-  },
-  {
-    id: "46",
-    name: "Mobile App Development Portfolio",
-    sponsor: "AppVentures Capital",
-    targetRaise: 9e6,
-    amountRaised: 63e5,
-    imageUrl: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 5e4,
-    projectedReturn: 26.5,
-    term: "5 years"
-  },
-  {
-    id: "47",
-    name: "Columbus Logistics Hub",
-    sponsor: "Central Logistics Properties",
-    targetRaise: 16e6,
-    amountRaised: 12e6,
-    imageUrl: "https://images.unsplash.com/photo-1566140967404-b8b3932483f5?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "Columbus, OH",
-    minInvestment: 1e5,
-    projectedReturn: 13,
-    term: "15 years"
-  },
-  {
-    id: "48",
-    name: "Smart Home Technology Fund",
-    sponsor: "Connected Living Ventures",
-    targetRaise: 105e5,
-    amountRaised: 735e4,
-    imageUrl: "https://images.unsplash.com/photo-1558002038-1055907df827?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 75e3,
-    projectedReturn: 24,
-    term: "6 years"
-  },
-  {
-    id: "49",
-    name: "New Orleans French Quarter Hotel",
-    sponsor: "Big Easy Hospitality",
-    targetRaise: 23e6,
-    amountRaised: 1725e4,
-    imageUrl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&auto=format&fit=crop",
-    type: "real-estate",
-    location: "New Orleans, LA",
-    minInvestment: 175e3,
-    projectedReturn: 17.5,
-    term: "8 years"
-  },
-  {
-    id: "50",
-    name: "Electric Vehicle Infrastructure",
-    sponsor: "EV Future Capital",
-    targetRaise: 22e6,
-    amountRaised: 154e5,
-    imageUrl: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&auto=format&fit=crop",
-    type: "private-equity",
-    minInvestment: 15e4,
-    projectedReturn: 21.5,
-    term: "9 years"
+const DB_PATH = process.env.DATABASE_PATH || join(process.cwd(), "db/iomarkets.db");
+let db = null;
+function getDb() {
+  if (!db) {
+    db = new Database(DB_PATH, {
+      readonly: false,
+      fileMustExist: true
+    });
+    db.pragma("foreign_keys = ON");
+    db.pragma("journal_mode = WAL");
   }
-];
+  return db;
+}
+function closeDb() {
+  if (db) {
+    db.close();
+    db = null;
+  }
+}
+process.on("exit", closeDb);
+process.on("SIGINT", () => {
+  closeDb();
+  process.exit(0);
+});
+function getAllInvestments() {
+  const db2 = getDb();
+  const stmt = db2.prepare(`
+    SELECT
+      id, name, sponsor,
+      target_raise as targetRaise,
+      amount_raised as amountRaised,
+      image_url as imageUrl,
+      type, location,
+      min_investment as minInvestment,
+      projected_return as projectedReturn,
+      term
+    FROM investments
+    ORDER BY created_at DESC
+  `);
+  return stmt.all();
+}
+function getInvestmentById(id) {
+  const db2 = getDb();
+  const stmt = db2.prepare(`
+    SELECT
+      id, name, sponsor,
+      target_raise as targetRaise,
+      amount_raised as amountRaised,
+      image_url as imageUrl,
+      type, location,
+      min_investment as minInvestment,
+      projected_return as projectedReturn,
+      term
+    FROM investments
+    WHERE id = ?
+  `);
+  return stmt.get(id);
+}
+function getSponsorsForInvestment(investmentId) {
+  const db2 = getDb();
+  const stmt = db2.prepare(`
+    SELECT
+      s.id, s.name, s.email, s.phone,
+      s.linkedin_url as linkedInUrl,
+      s.photo_url as photoUrl,
+      s.total_deals as totalDeals,
+      s.total_value as totalValue
+    FROM sponsors s
+    JOIN investment_sponsors isp ON s.id = isp.sponsor_id
+    WHERE isp.investment_id = ?
+  `);
+  return stmt.all(investmentId);
+}
+function getSponsorById(id) {
+  const db2 = getDb();
+  const stmt = db2.prepare(`
+    SELECT
+      id, name, email, phone,
+      linkedin_url as linkedInUrl,
+      photo_url as photoUrl,
+      total_deals as totalDeals,
+      total_value as totalValue
+    FROM sponsors
+    WHERE id = ?
+  `);
+  return stmt.get(id);
+}
+function getAssetsForInvestment(investmentId) {
+  const db2 = getDb();
+  const stmt = db2.prepare(`
+    SELECT
+      id, name, type, url,
+      thumbnail_url as thumbnailUrl,
+      uploaded_date as uploadedDate,
+      size
+    FROM due_diligence_assets
+    WHERE investment_id = ?
+    ORDER BY uploaded_date DESC
+  `);
+  return stmt.all(investmentId);
+}
 const ITEMS_PER_PAGE = 50;
 const meta$4 = () => {
   return [{
@@ -831,8 +307,9 @@ const meta$4 = () => {
 async function loader$4({
   request
 }) {
+  const investments = getAllInvestments();
   return {
-    investments: mockInvestments
+    investments
   };
 }
 const home = UNSAFE_withComponentProps(function Home() {
@@ -1050,7 +527,7 @@ const meta$3 = ({
 async function loader$3({
   params
 }) {
-  const investment = mockInvestments.find((inv) => inv.id === params.id) || null;
+  const investment = params.id ? getInvestmentById(params.id) || null : null;
   return {
     investment
   };
@@ -1288,179 +765,6 @@ const route3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   loader: loader$3,
   meta: meta$3
 }, Symbol.toStringTag, { value: "Module" }));
-const mockSponsors = {
-  "1": [
-    {
-      id: "s1",
-      name: "Michael Rodriguez",
-      email: "mrodriguez@urbancapital.com",
-      phone: "+1 (512) 555-0123",
-      linkedInUrl: "https://linkedin.com/in/michael-rodriguez",
-      photoUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop",
-      totalDeals: 23,
-      totalValue: 45e7
-    },
-    {
-      id: "s2",
-      name: "Sarah Chen",
-      email: "schen@urbancapital.com",
-      phone: "+1 (512) 555-0124",
-      linkedInUrl: "https://linkedin.com/in/sarah-chen",
-      photoUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&auto=format&fit=crop",
-      totalDeals: 18,
-      totalValue: 32e7
-    },
-    {
-      id: "s4",
-      name: "James Thompson",
-      email: "jthompson@urbancapital.com",
-      phone: "+1 (512) 555-0125",
-      linkedInUrl: "https://linkedin.com/in/james-thompson",
-      photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop",
-      totalDeals: 27,
-      totalValue: 58e7
-    },
-    {
-      id: "s5",
-      name: "Emily Martinez",
-      email: "emartinez@urbancapital.com",
-      phone: "+1 (512) 555-0126",
-      linkedInUrl: "https://linkedin.com/in/emily-martinez",
-      photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop",
-      totalDeals: 21,
-      totalValue: 41e7
-    }
-  ],
-  "2": [
-    {
-      id: "s3",
-      name: "David Park",
-      email: "dpark@techventures.com",
-      phone: "+1 (650) 555-0200",
-      linkedInUrl: "https://linkedin.com/in/david-park",
-      photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop",
-      totalDeals: 31,
-      totalValue: 89e7
-    }
-  ]
-};
-const mockDueDiligenceAssets = {
-  "1": [
-    {
-      id: "a1",
-      name: "Investment Memorandum",
-      type: "pdf",
-      url: "https://example.com/memo.pdf",
-      uploadedDate: "2024-01-15",
-      size: "2.4 MB"
-    },
-    {
-      id: "a2",
-      name: "Financial Projections",
-      type: "pdf",
-      url: "https://example.com/projections.pdf",
-      uploadedDate: "2024-01-20",
-      size: "1.8 MB"
-    },
-    {
-      id: "a3",
-      name: "Property Survey",
-      type: "pdf",
-      url: "https://example.com/survey.pdf",
-      uploadedDate: "2024-01-22",
-      size: "5.2 MB"
-    },
-    {
-      id: "a4",
-      name: "Site Photos - Exterior",
-      type: "image",
-      url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop",
-      thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&auto=format&fit=crop",
-      uploadedDate: "2024-01-25",
-      size: "3.1 MB"
-    },
-    {
-      id: "a5",
-      name: "Site Photos - Interior",
-      type: "image",
-      url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&auto=format&fit=crop",
-      thumbnailUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&auto=format&fit=crop",
-      uploadedDate: "2024-01-25",
-      size: "2.8 MB"
-    },
-    {
-      id: "a6",
-      name: "Property Walkthrough Video",
-      type: "video",
-      url: "https://www.youtube.com/watch?v=5ZDBnjgQCtA",
-      thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&auto=format&fit=crop",
-      uploadedDate: "2024-01-28",
-      size: "45 MB"
-    },
-    {
-      id: "a7",
-      name: "Market Analysis Report",
-      type: "pdf",
-      url: "https://example.com/market-analysis.pdf",
-      uploadedDate: "2024-02-01",
-      size: "3.6 MB"
-    },
-    {
-      id: "a8",
-      name: "Legal Documents",
-      type: "pdf",
-      url: "https://example.com/legal.pdf",
-      uploadedDate: "2024-02-03",
-      size: "4.2 MB"
-    }
-  ],
-  "2": [
-    {
-      id: "a9",
-      name: "Investment Thesis",
-      type: "pdf",
-      url: "https://example.com/thesis.pdf",
-      uploadedDate: "2024-01-10",
-      size: "1.9 MB"
-    },
-    {
-      id: "a10",
-      name: "Company Financials",
-      type: "pdf",
-      url: "https://example.com/financials.pdf",
-      uploadedDate: "2024-01-12",
-      size: "2.1 MB"
-    },
-    {
-      id: "a11",
-      name: "Pitch Deck",
-      type: "pdf",
-      url: "https://example.com/deck.pdf",
-      uploadedDate: "2024-01-18",
-      size: "8.5 MB"
-    }
-  ]
-};
-const getSponsorsForInvestment = (investmentId) => {
-  if (mockSponsors[investmentId]) {
-    return mockSponsors[investmentId];
-  }
-  const sponsorKeys = Object.keys(mockSponsors);
-  const fallbackKey = sponsorKeys[parseInt(investmentId) % sponsorKeys.length] || "1";
-  return mockSponsors[fallbackKey];
-};
-const getAssetsForInvestment = (investmentId) => {
-  return mockDueDiligenceAssets[investmentId] || [
-    {
-      id: "default-asset",
-      name: "Investment Overview",
-      type: "pdf",
-      url: "https://example.com/overview.pdf",
-      uploadedDate: "2024-01-01",
-      size: "1.5 MB"
-    }
-  ];
-};
 function DealHeader({ investment }) {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
@@ -1862,7 +1166,7 @@ const meta$2 = ({
 async function loader$2({
   params
 }) {
-  const investment = mockInvestments.find((inv) => inv.id === params.id) || null;
+  const investment = params.id ? getInvestmentById(params.id) || null : null;
   const sponsors = params.id ? getSponsorsForInvestment(params.id) : [];
   const assets = params.id ? getAssetsForInvestment(params.id) : [];
   return {
@@ -1999,15 +1303,7 @@ const meta$1 = ({
 async function loader$1({
   params
 }) {
-  let sponsor = null;
-  for (const investmentId in mockSponsors) {
-    const sponsorList = mockSponsors[investmentId];
-    const found = sponsorList.find((s) => s.id === params.sponsorId);
-    if (found) {
-      sponsor = found;
-      break;
-    }
-  }
+  const sponsor = params.sponsorId ? getSponsorById(params.sponsorId) || null : null;
   return {
     sponsor
   };
@@ -2582,7 +1878,7 @@ const route6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   loader,
   meta
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-C40HxdJw.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/index-CCClZibW.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": true, "module": "/assets/root-C3_d9WbL.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/index-CCClZibW.js"], "css": ["/assets/root-Da3Y5bwq.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-BqSrIdac.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/createLucideIcon-k463m4iz.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/dashboard": { "id": "routes/dashboard", "parentId": "root", "path": "dashboard", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/dashboard-CLEPOWop.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/index-CCClZibW.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/investment.$id": { "id": "routes/investment.$id", "parentId": "root", "path": "investment/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/investment._id-DHZkibPt.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/index-CCClZibW.js", "/assets/arrow-left-VVTAgrpH.js", "/assets/dollar-sign-D6S9qB7J.js", "/assets/trending-up-DmoKmttM.js", "/assets/createLucideIcon-k463m4iz.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/investment.$id.due-diligence": { "id": "routes/investment.$id.due-diligence", "parentId": "root", "path": "investment/:id/due-diligence", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/investment._id.due-diligence-C0oNpjsi.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/dollar-sign-D6S9qB7J.js", "/assets/trending-up-DmoKmttM.js", "/assets/phone-Bv6Qsl2A.js", "/assets/createLucideIcon-k463m4iz.js", "/assets/arrow-left-VVTAgrpH.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/sponsor.$sponsorId.deals": { "id": "routes/sponsor.$sponsorId.deals", "parentId": "root", "path": "sponsor/:sponsorId/deals", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/sponsor._sponsorId.deals-CLzpTy5P.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/phone-Bv6Qsl2A.js", "/assets/dollar-sign-D6S9qB7J.js", "/assets/external-link-Da9Af5fC.js", "/assets/createLucideIcon-k463m4iz.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/sponsor.$sponsorId.deals.$dealId": { "id": "routes/sponsor.$sponsorId.deals.$dealId", "parentId": "root", "path": "sponsor/:sponsorId/deals/:dealId", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/sponsor._sponsorId.deals._dealId-Dub9FlEM.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/arrow-left-VVTAgrpH.js", "/assets/external-link-Da9Af5fC.js", "/assets/createLucideIcon-k463m4iz.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-40979228.js", "version": "40979228", "sri": void 0 };
+const serverManifest = { "entry": { "module": "/assets/entry.client-C40HxdJw.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/index-CCClZibW.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": true, "module": "/assets/root-BDTFwUyz.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/index-CCClZibW.js"], "css": ["/assets/root-CBJdm3L3.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/home": { "id": "routes/home", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/home-BqSrIdac.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/createLucideIcon-k463m4iz.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/dashboard": { "id": "routes/dashboard", "parentId": "root", "path": "dashboard", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/dashboard-CLEPOWop.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/index-CCClZibW.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/investment.$id": { "id": "routes/investment.$id", "parentId": "root", "path": "investment/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/investment._id-DHZkibPt.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/index-CCClZibW.js", "/assets/arrow-left-VVTAgrpH.js", "/assets/dollar-sign-D6S9qB7J.js", "/assets/trending-up-DmoKmttM.js", "/assets/createLucideIcon-k463m4iz.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/investment.$id.due-diligence": { "id": "routes/investment.$id.due-diligence", "parentId": "root", "path": "investment/:id/due-diligence", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/investment._id.due-diligence-C0oNpjsi.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/dollar-sign-D6S9qB7J.js", "/assets/trending-up-DmoKmttM.js", "/assets/phone-Bv6Qsl2A.js", "/assets/createLucideIcon-k463m4iz.js", "/assets/arrow-left-VVTAgrpH.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/sponsor.$sponsorId.deals": { "id": "routes/sponsor.$sponsorId.deals", "parentId": "root", "path": "sponsor/:sponsorId/deals", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/sponsor._sponsorId.deals-CLzpTy5P.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/phone-Bv6Qsl2A.js", "/assets/dollar-sign-D6S9qB7J.js", "/assets/external-link-Da9Af5fC.js", "/assets/createLucideIcon-k463m4iz.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/sponsor.$sponsorId.deals.$dealId": { "id": "routes/sponsor.$sponsorId.deals.$dealId", "parentId": "root", "path": "sponsor/:sponsorId/deals/:dealId", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasErrorBoundary": false, "module": "/assets/sponsor._sponsorId.deals._dealId-Dub9FlEM.js", "imports": ["/assets/chunk-OIYGIGL5-Czuf_mdf.js", "/assets/arrow-left-VVTAgrpH.js", "/assets/external-link-Da9Af5fC.js", "/assets/createLucideIcon-k463m4iz.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-c76d9276.js", "version": "c76d9276", "sri": void 0 };
 const assetsBuildDirectory = "build/client";
 const basename = "/";
 const future = { "v8_middleware": false, "unstable_optimizeDeps": false, "unstable_splitRouteModules": false, "unstable_subResourceIntegrity": false, "unstable_viteEnvironmentApi": false };

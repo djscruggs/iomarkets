@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLoaderData, LoaderFunctionArgs, MetaFunction } from 'react-router-dom'
 import { InvestmentCard } from '../components/InvestmentCard'
-import { mockInvestments } from '../data/mockInvestments'
+import { getAllInvestments } from '../lib/queries'
 import { Investment } from '../types/investment'
 
 const ITEMS_PER_PAGE = 50
@@ -21,8 +21,8 @@ export const meta: MetaFunction = () => {
 }
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<HomeLoaderData> {
-  // In a real app, this would fetch from an API
-  return { investments: mockInvestments }
+  const investments = getAllInvestments()
+  return { investments }
 }
 
 export default function Home() {

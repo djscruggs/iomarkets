@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useParams, Navigate, Link, useLoaderData, LoaderFunctionArgs, MetaFunction } from 'react-router-dom'
 import { ArrowLeft, FileText, Image as ImageIcon, Video } from 'lucide-react'
-import { mockInvestments } from '../data/mockInvestments'
-import { getSponsorsForInvestment, getAssetsForInvestment } from '../data/mockDueDiligence'
+import { getInvestmentById, getSponsorsForInvestment, getAssetsForInvestment } from '../lib/queries'
 import { DueDiligenceAsset, Sponsor } from '../types/dueDiligence'
 import { DealHeader } from '../components/DealHeader'
 import { SponsorCard } from '../components/SponsorCard'
@@ -30,7 +29,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<DueDiligenceLoaderData> {
-  const investment = mockInvestments.find((inv) => inv.id === params.id) || null
+  const investment = params.id ? getInvestmentById(params.id) || null : null
   const sponsors = params.id ? getSponsorsForInvestment(params.id) : []
   const assets = params.id ? getAssetsForInvestment(params.id) : []
 

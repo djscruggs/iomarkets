@@ -17,7 +17,7 @@ import {
   DollarSign,
   TrendingUp,
 } from "lucide-react";
-import { mockInvestments } from "../data/mockInvestments";
+import { getInvestmentById } from "../lib/queries";
 import { Investment } from "../types/investment";
 
 interface InvestmentDetailLoaderData {
@@ -38,7 +38,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export async function loader({ params }: LoaderFunctionArgs): Promise<InvestmentDetailLoaderData> {
-  const investment = mockInvestments.find((inv) => inv.id === params.id) || null;
+  const investment = params.id ? getInvestmentById(params.id) || null : null;
   return { investment };
 }
 
