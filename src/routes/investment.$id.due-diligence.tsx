@@ -192,6 +192,32 @@ interface ContentAreaProps {
 }
 
 function ContentArea({ selectedAsset, onAskAI, aiChatRef }: ContentAreaProps) {
+  // When no asset is selected, show AI chat prominently
+  if (!selectedAsset) {
+    return (
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Empty state with AI chat */}
+        <div className="flex-1 overflow-auto p-6 flex flex-col">
+          <div className="flex-1 flex items-start justify-center pt-12 pb-6">
+            <div className="text-center max-w-md">
+              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 font-medium text-lg mb-2">Select a document to view</p>
+              <p className="text-sm text-gray-500">
+                Choose from the due diligence materials on the left, or ask AI about this investment below
+              </p>
+            </div>
+          </div>
+
+          {/* AI Chat - visible at bottom */}
+          <div ref={aiChatRef} className="max-w-4xl mx-auto w-full pb-6">
+            <AIChat autoFocus={true} startExpanded={true} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // When asset is selected, show it with AI chat fixed at bottom
   return (
     <div className="flex-1 flex flex-col overflow-hidden relative">
       {/* Asset viewer - scrollable area */}
@@ -235,9 +261,9 @@ export default function DueDiligence() {
   const aiChatRef = useRef<HTMLDivElement>(null)
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     sponsors: true,
-    documents: true,
-    photos: true,
-    videos: true,
+    documents: false,
+    photos: false,
+    videos: false,
   })
 
   // Group assets by type

@@ -40,7 +40,18 @@ export function AssetViewer({ asset, onAskAI }: AssetViewerProps) {
   const embedUrl = isYouTube ? getYouTubeEmbedUrl(asset.url) : null;
 
   return (
-    <div className="h-full bg-white rounded-lg shadow-sm overflow-hidden flex flex-col">
+    <div className="h-full bg-white rounded-lg shadow-sm overflow-hidden flex flex-col relative">
+      {/* Ask AI button - fixed top right */}
+      {onAskAI && (
+        <button
+          onClick={onAskAI}
+          className="absolute top-4 right-4 z-10 flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer shadow-lg"
+        >
+          <MessageSquare className="w-4 h-4" />
+          Ask AI
+        </button>
+      )}
+
       {/* Asset header - Hide for YouTube videos */}
       {!isYouTube && (
         <div className="px-6 py-4 border-b border-gray-200">
@@ -54,7 +65,7 @@ export function AssetViewer({ asset, onAskAI }: AssetViewerProps) {
             {asset.type === "video" && (
               <Video className="w-5 h-5 text-purple-500" />
             )}
-            <div className="flex-1">
+            <div className="flex-1 mr-28">
               <h3 className="font-semibold text-gray-900">{asset.name}</h3>
               <p className="text-sm text-gray-500">
                 {asset.size} • Uploaded{" "}
@@ -62,15 +73,6 @@ export function AssetViewer({ asset, onAskAI }: AssetViewerProps) {
               </p>
             </div>
             <div className="flex gap-2">
-              {onAskAI && (
-                <button
-                  onClick={onAskAI}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  Ask AI
-                </button>
-              )}
               <a
                 href={asset.url}
                 download

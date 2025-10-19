@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Send,
   Bot,
@@ -16,7 +16,12 @@ interface Message {
   timestamp: Date;
 }
 
-export function AIChat() {
+interface AIChatProps {
+  autoFocus?: boolean;
+  startExpanded?: boolean;
+}
+
+export function AIChat({ autoFocus = false, startExpanded = false }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -29,8 +34,16 @@ export function AIChat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(startExpanded);
+  const [hasInteracted, setHasInteracted] = useState(startExpanded);
+  const [hasUserMessages, setHasUserMessages] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +52,11 @@ export function AIChat() {
     // Mark as interacted and expand to normal size on first message
     if (!hasInteracted) {
       setHasInteracted(true);
+    }
+
+    // Mark that user has sent at least one message
+    if (!hasUserMessages) {
+      setHasUserMessages(true);
     }
 
     const userMessage: Message = {
@@ -109,14 +127,16 @@ export function AIChat() {
           </h3>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={handleDownloadConversation}
-            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
-            title="Download Conversation"
-          >
-            <Download className="w-3 h-3" />
-            <span>Download</span>
-          </button>
+          {hasUserMessages && (
+            <button
+              onClick={handleDownloadConversation}
+              className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
+              title="Download Conversation"
+            >
+              <Download className="w-3 h-3" />
+              <span>Download</span>
+            </button>
+          )}
           {hasInteracted && !isCollapsed && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
@@ -194,6 +214,7 @@ export function AIChat() {
         <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200">
           <div className="flex gap-2">
             <input
+              ref={inputRef}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
