@@ -11,17 +11,11 @@ fly secrets set VITE_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
 
 ### 2. Google Cloud Credentials
 
-The credentials JSON file needs to be base64 encoded and stored as a secret:
+The credentials JSON file needs to be stored as a secret:
 
 ```bash
-# Base64 encode the credentials file
-cat google-credentials.json | base64 > credentials.b64
-
-# Set as a secret (this will be decoded at runtime)
-fly secrets set GOOGLE_CREDENTIALS_BASE64="$(cat credentials.b64)"
-
-# Clean up temp file
-rm credentials.b64
+# Set the JSON file contents as a secret
+fly secrets set GOOGLE_CREDENTIALS_JSON="$(cat google-credentials.json)"
 ```
 
 ### 3. Google Cloud Configuration
@@ -32,34 +26,19 @@ fly secrets set DATA_STORE_ID_PREFIX="iomarkets-dd-"
 fly secrets set GEMINI_MODEL_NAME="gemini-2.0-flash-exp"
 ```
 
-## Startup Script Modification
+## How Credentials Work in Production
 
-Add a startup script to decode the credentials at runtime. Create `scripts/startup.sh`:
+**Local Development:**
+- `GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json` points to a file on your filesystem
+- The file is read directly
 
-```bash
-#!/bin/sh
+**Production (Fly.io):**
+- The file can't be committed (it's in .gitignore)
+- We store the JSON content as a secret: `GOOGLE_CREDENTIALS_JSON`
+- The startup script writes it to a file at `/app/credentials/google-credentials.json`
+- The environment variable `GOOGLE_APPLICATION_CREDENTIALS` points to that path
 
-# Decode Google Cloud credentials from base64
-if [ -n "$GOOGLE_CREDENTIALS_BASE64" ]; then
-  echo "Decoding Google Cloud credentials..."
-  echo "$GOOGLE_CREDENTIALS_BASE64" | base64 -d > /app/credentials/google-credentials.json
-  echo "Credentials decoded successfully"
-fi
-
-# Start the application
-exec npm run start
-```
-
-Then update the Dockerfile CMD:
-
-```dockerfile
-# Add startup script
-COPY scripts/startup.sh /app/startup.sh
-RUN chmod +x /app/startup.sh
-
-# Update CMD
-CMD [ "/app/startup.sh" ]
-```
+This keeps the same file-based approach but securely injects the content at runtime.
 
 ## Complete Deployment Steps
 
@@ -79,8 +58,8 @@ git check-ignore google-credentials.json  # Should output: google-credentials.js
 # Clerk
 fly secrets set VITE_CLERK_PUBLISHABLE_KEY="pk_test_your-key"
 
-# Google Cloud credentials (base64 encoded)
-fly secrets set GOOGLE_CREDENTIALS_BASE64="$(cat google-credentials.json | base64)"
+# Google Cloud credentials (JSON content)
+fly secrets set GOOGLE_CREDENTIALS_JSON="$(cat google-credentials.json)"
 
 # Google Cloud config
 fly secrets set GCP_PROJECT_ID="cardlessid"
@@ -98,7 +77,7 @@ fly secrets list
 
 You should see:
 - VITE_CLERK_PUBLISHABLE_KEY
-- GOOGLE_CREDENTIALS_BASE64
+- GOOGLE_CREDENTIALS_JSON
 - GCP_PROJECT_ID
 - CLOUD_STORAGE_BUCKET
 - DATA_STORE_ID_PREFIX
@@ -159,7 +138,7 @@ exit
 | GOOGLE_APPLICATION_CREDENTIALS | Yes | fly.toml | /app/credentials/google-credentials.json |
 | GCP_REGION | Yes | fly.toml | us-central1 |
 | VITE_CLERK_PUBLISHABLE_KEY | Yes | fly secrets | Your Clerk key |
-| GOOGLE_CREDENTIALS_BASE64 | Yes | fly secrets | Base64 encoded JSON |
+| GOOGLE_CREDENTIALS_JSON | Yes | fly secrets | Raw JSON content |
 | GCP_PROJECT_ID | Yes | fly secrets | cardlessid |
 | CLOUD_STORAGE_BUCKET | Yes | fly secrets | iomarkets-dd |
 | DATA_STORE_ID_PREFIX | Yes | fly secrets | iomarkets-dd- |

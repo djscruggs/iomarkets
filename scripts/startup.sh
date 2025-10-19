@@ -4,14 +4,14 @@
 
 echo "🚀 Starting IOMarkets..."
 
-# Decode Google Cloud credentials from base64 if provided
-if [ -n "$GOOGLE_CREDENTIALS_BASE64" ]; then
-  echo "📝 Decoding Google Cloud credentials..."
+# Write Google Cloud credentials from secret if provided
+if [ -n "$GOOGLE_CREDENTIALS_JSON" ]; then
+  echo "📝 Writing Google Cloud credentials..."
   mkdir -p /app/credentials
-  echo "$GOOGLE_CREDENTIALS_BASE64" | base64 -d > /app/credentials/google-credentials.json
-  echo "✅ Credentials decoded successfully"
+  echo "$GOOGLE_CREDENTIALS_JSON" > /app/credentials/google-credentials.json
+  echo "✅ Credentials file created successfully"
 else
-  echo "⚠️  Warning: GOOGLE_CREDENTIALS_BASE64 not set. RAG features will not work."
+  echo "⚠️  Warning: GOOGLE_CREDENTIALS_JSON not set. RAG features will not work."
 fi
 
 # Verify credentials file exists
