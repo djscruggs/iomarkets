@@ -15,13 +15,18 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <Link
               to="/"
-              className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
+              className="flex items-center gap-3 text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
             >
-              IoMarkets <span className="font-normal text-sm">&reg;</span>
+              <img
+                src="/favicon.png"
+                alt="IOMarkets Logo"
+                className="h-8 w-8 rounded-md"
+              />
+              <span>IoMarkets <span className="font-normal text-sm">&reg;</span></span>
             </Link>
             <div>
               <SignedOut>

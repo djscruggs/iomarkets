@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS investments (
   min_investment INTEGER NOT NULL,
   projected_return REAL NOT NULL,
   term TEXT NOT NULL,
+  featured INTEGER DEFAULT 0 CHECK(featured IN (0, 1)),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -60,6 +61,7 @@ CREATE TABLE IF NOT EXISTS due_diligence_assets (
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_investments_type ON investments(type);
 CREATE INDEX IF NOT EXISTS idx_investments_location ON investments(location);
+CREATE INDEX IF NOT EXISTS idx_investments_featured ON investments(featured);
 CREATE INDEX IF NOT EXISTS idx_sponsors_email ON sponsors(email);
 CREATE INDEX IF NOT EXISTS idx_due_diligence_investment_id ON due_diligence_assets(investment_id);
 CREATE INDEX IF NOT EXISTS idx_investment_sponsors_investment_id ON investment_sponsors(investment_id);

@@ -1,8 +1,9 @@
 import { DueDiligenceAsset } from "../types/dueDiligence";
-import { FileText, Image as ImageIcon, Video } from "lucide-react";
+import { FileText, Image as ImageIcon, Video, MessageSquare } from "lucide-react";
 
 interface AssetViewerProps {
   asset: DueDiligenceAsset | null;
+  onAskAI?: () => void;
 }
 
 // Helper function to convert YouTube URL to embed URL
@@ -20,7 +21,7 @@ const isYouTubeUrl = (url: string): boolean => {
   return url.includes("youtube.com") || url.includes("youtu.be");
 };
 
-export function AssetViewer({ asset }: AssetViewerProps) {
+export function AssetViewer({ asset, onAskAI }: AssetViewerProps) {
   if (!asset) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
@@ -60,41 +61,42 @@ export function AssetViewer({ asset }: AssetViewerProps) {
                 {new Date(asset.uploadedDate).toLocaleDateString()}
               </p>
             </div>
-            <a
-              href={asset.url}
-              download
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
-            >
-              Download
-            </a>
+            <div className="flex gap-2">
+              {onAskAI && (
+                <button
+                  onClick={onAskAI}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium cursor-pointer"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Ask AI
+                </button>
+              )}
+              <a
+                href={asset.url}
+                download
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
+              >
+                Download
+              </a>
+            </div>
           </div>
         </div>
       )}
 
       {/* Asset content */}
-      <div className={`flex-1 overflow-auto ${isYouTube ? "p-0" : "p-6"}`}>
+      <div className={`flex-1 overflow-auto ${isYouTube ? "p-0" : ""}`}>
         {asset.type === "pdf" && (
-          <div className="h-full flex items-center justify-center bg-gray-50 rounded-lg">
-            <div className="text-center">
-              <FileText className="w-24 h-24 text-red-500 mx-auto mb-4" />
-              <p className="text-gray-700 font-medium mb-2">{asset.name}</p>
-              <p className="text-sm text-gray-500 mb-4">
-                PDF Document • {asset.size}
-              </p>
-              <a
-                href={asset.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer"
-              >
-                Open in New Tab
-              </a>
-            </div>
+          <div className="h-full w-full">
+            <iframe
+              src={asset.url}
+              title={asset.name}
+              className="w-full h-full border-0"
+            />
           </div>
         )}
 
         {asset.type === "image" && (
-          <div className="h-full flex items-center justify-center">
+          <div className="h-full flex items-center justify-center p-6">
             <img
               src={asset.url}
               alt={asset.name}
@@ -116,7 +118,7 @@ export function AssetViewer({ asset }: AssetViewerProps) {
         )}
 
         {asset.type === "video" && !isYouTube && (
-          <div className="h-full flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="h-full flex items-center justify-center bg-gray-50 rounded-lg p-6">
             <div className="text-center">
               <Video className="w-24 h-24 text-purple-500 mx-auto mb-4" />
               <p className="text-gray-700 font-medium mb-2">{asset.name}</p>

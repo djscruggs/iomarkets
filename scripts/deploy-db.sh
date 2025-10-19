@@ -9,7 +9,7 @@ echo "========================================"
 echo ""
 
 # Check if DATABASE_PATH is set, otherwise use default
-DB_PATH="${DATABASE_PATH:-/data/iomarkets.db}"
+DB_PATH="${DATABASE_PATH:$(pwd)/../data/iomarkets.db}"
 echo "Database path: $DB_PATH"
 echo ""
 

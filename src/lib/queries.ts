@@ -1,7 +1,7 @@
 // Database queries
-import { getDb } from './db';
-import type { Investment } from '../types/investment';
-import type { Sponsor, DueDiligenceAsset } from '../types/dueDiligence';
+import { getDb } from "./db";
+import type { Investment } from "../types/investment";
+import type { Sponsor, DueDiligenceAsset } from "../types/dueDiligence";
 
 // Investment queries
 export function getAllInvestments(): Investment[] {
@@ -15,9 +15,10 @@ export function getAllInvestments(): Investment[] {
       type, location,
       min_investment as minInvestment,
       projected_return as projectedReturn,
-      term
+      term,
+      featured
     FROM investments
-    ORDER BY created_at DESC
+    ORDER BY featured DESC, created_at DESC
   `);
 
   return stmt.all() as Investment[];
@@ -34,7 +35,8 @@ export function getInvestmentById(id: string): Investment | undefined {
       type, location,
       min_investment as minInvestment,
       projected_return as projectedReturn,
-      term
+      term,
+      featured
     FROM investments
     WHERE id = ?
   `);
@@ -42,7 +44,9 @@ export function getInvestmentById(id: string): Investment | undefined {
   return stmt.get(id) as Investment | undefined;
 }
 
-export function getInvestmentsByType(type: 'real-estate' | 'private-equity'): Investment[] {
+export function getInvestmentsByType(
+  type: "real-estate" | "private-equity"
+): Investment[] {
   const db = getDb();
   const stmt = db.prepare(`
     SELECT
@@ -53,10 +57,11 @@ export function getInvestmentsByType(type: 'real-estate' | 'private-equity'): In
       type, location,
       min_investment as minInvestment,
       projected_return as projectedReturn,
-      term
+      term,
+      featured
     FROM investments
     WHERE type = ?
-    ORDER BY created_at DESC
+    ORDER BY featured DESC, created_at DESC
   `);
 
   return stmt.all(type) as Investment[];
@@ -97,7 +102,9 @@ export function getSponsorById(id: string): Sponsor | undefined {
 }
 
 // Due diligence asset queries
-export function getAssetsForInvestment(investmentId: string): DueDiligenceAsset[] {
+export function getAssetsForInvestment(
+  investmentId: string
+): DueDiligenceAsset[] {
   const db = getDb();
   const stmt = db.prepare(`
     SELECT
@@ -140,10 +147,11 @@ export function searchInvestments(searchTerm: string): Investment[] {
       type, location,
       min_investment as minInvestment,
       projected_return as projectedReturn,
-      term
+      term,
+      featured
     FROM investments
     WHERE name LIKE ? OR sponsor LIKE ? OR location LIKE ?
-    ORDER BY created_at DESC
+    ORDER BY featured DESC, created_at DESC
   `);
 
   const searchPattern = `%${searchTerm}%`;
@@ -161,9 +169,10 @@ export function getTopPerformingInvestments(limit: number = 10): Investment[] {
       type, location,
       min_investment as minInvestment,
       projected_return as projectedReturn,
-      term
+      term,
+      featured
     FROM investments
-    ORDER BY projected_return DESC
+    ORDER BY featured DESC, projected_return DESC
     LIMIT ?
   `);
 
