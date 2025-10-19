@@ -11,4 +11,5 @@ export default [
   route("investment/:id/due-diligence", "routes/investment.$id.due-diligence.tsx"),
   route("sponsor/:sponsorId/deals", "routes/sponsor.$sponsorId.deals.tsx"),
   route("sponsor/:sponsorId/deals/:dealId", "routes/sponsor.$sponsorId.deals.$dealId.tsx"),
+  route("api/chat", "routes/api.chat.ts"),
 ] satisfies RouteConfig;

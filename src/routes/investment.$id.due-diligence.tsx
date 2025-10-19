@@ -186,12 +186,13 @@ function Sidebar({ investmentId, sponsors, groupedAssets, expandedSections, sele
 
 // Content Area Component
 interface ContentAreaProps {
+  investmentId: string
   selectedAsset: DueDiligenceAsset | null
   onAskAI: () => void
   aiChatRef: React.RefObject<HTMLDivElement>
 }
 
-function ContentArea({ selectedAsset, onAskAI, aiChatRef }: ContentAreaProps) {
+function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef }: ContentAreaProps) {
   // When no asset is selected, show AI chat prominently
   if (!selectedAsset) {
     return (
@@ -210,7 +211,7 @@ function ContentArea({ selectedAsset, onAskAI, aiChatRef }: ContentAreaProps) {
 
           {/* AI Chat - visible at bottom */}
           <div ref={aiChatRef} className="max-w-4xl mx-auto w-full pb-6">
-            <AIChat autoFocus={true} startExpanded={true} />
+            <AIChat autoFocus={true} startExpanded={true} investmentId={investmentId} />
           </div>
         </div>
       </div>
@@ -227,7 +228,7 @@ function ContentArea({ selectedAsset, onAskAI, aiChatRef }: ContentAreaProps) {
 
       {/* AI Chat - fixed at bottom of content area */}
       <div ref={aiChatRef} className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-gray-50 p-4">
-        <AIChat />
+        <AIChat investmentId={investmentId} />
       </div>
     </div>
   )
@@ -315,6 +316,7 @@ export default function DueDiligence() {
         />
 
         <ContentArea
+          investmentId={id}
           selectedAsset={selectedAsset}
           onAskAI={handleAskAI}
           aiChatRef={aiChatRef}

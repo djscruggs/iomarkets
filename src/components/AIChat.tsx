@@ -19,9 +19,10 @@ interface Message {
 interface AIChatProps {
   autoFocus?: boolean;
   startExpanded?: boolean;
+  investmentId?: string;
 }
 
-export function AIChat({ autoFocus = false, startExpanded = false }: AIChatProps) {
+export function AIChat({ autoFocus = false, startExpanded = false, investmentId }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -70,18 +71,64 @@ export function AIChat({ autoFocus = false, startExpanded = false }: AIChatProps
     setInput("");
     setIsLoading(true);
 
-    // Simulate AI response (in production, this would call your AI API)
-    setTimeout(() => {
+    try {
+      // Call the chat API with investment context
+      if (!investmentId) {
+        throw new Error('Investment ID is required for chat');
+      }
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          investmentId,
+          message: input,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Failed to get response');
+      }
+
+      // Format citations if present
+      let content = data.response;
+      if (data.citations && data.citations.length > 0) {
+        const citationText = data.citations
+          .map((c: any, i: number) => `[${i + 1}] ${c.source}`)
+          .join('\n');
+        content += `\n\nSources:\n${citationText}`;
+      }
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content:
-          "This is a simulated AI response. In production, this would connect to your AI service to provide detailed answers about the investment deal based on the due diligence materials and investment data.",
+        content,
         timestamp: new Date(),
       };
+
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error: any) {
+      console.error('Chat error:', error);
+
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `Sorry, I encountered an error: ${error.message}\n\nPlease make sure the documents have been indexed for this investment.`,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleDownloadConversation = () => {

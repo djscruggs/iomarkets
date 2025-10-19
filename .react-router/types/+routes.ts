@@ -38,12 +38,15 @@ type Pages = {
       "dealId": string;
     };
   };
+  "/api/chat": {
+    params: {};
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/dashboard" | "/investment/:id" | "/investment/:id/due-diligence" | "/sponsor/:sponsorId/deals" | "/sponsor/:sponsorId/deals/:dealId";
+    page: "/" | "/dashboard" | "/investment/:id" | "/investment/:id/due-diligence" | "/sponsor/:sponsorId/deals" | "/sponsor/:sponsorId/deals/:dealId" | "/api/chat";
   };
   "routes/home.tsx": {
     id: "routes/home";
@@ -69,6 +72,10 @@ type RouteFiles = {
     id: "routes/sponsor.$sponsorId.deals.$dealId";
     page: "/sponsor/:sponsorId/deals/:dealId";
   };
+  "routes/api.chat.ts": {
+    id: "routes/api.chat";
+    page: "/api/chat";
+  };
 };
 
 type RouteModules = {
@@ -79,4 +86,5 @@ type RouteModules = {
   "routes/investment.$id.due-diligence": typeof import("./src/routes/investment.$id.due-diligence.tsx");
   "routes/sponsor.$sponsorId.deals": typeof import("./src/routes/sponsor.$sponsorId.deals.tsx");
   "routes/sponsor.$sponsorId.deals.$dealId": typeof import("./src/routes/sponsor.$sponsorId.deals.$dealId.tsx");
+  "routes/api.chat": typeof import("./src/routes/api.chat.ts");
 };
