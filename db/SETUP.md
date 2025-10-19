@@ -3,15 +3,22 @@
 ## What's Been Set Up
 
 ### 1. Database Files
+
 - **[schema.sql](schema.sql)** - SQLite schema with tables, indexes, and triggers
 - **[seed.sql](seed.sql)** - Sample seed data (for reference)
 - **iomarkets.db** - Live SQLite database (gitignored)
 
 ### 2. Scripts
+
 - **[scripts/init-db.js](../scripts/init-db.js)** - Initialize database schema
-- **[scripts/import-mock-data.ts](../scripts/import-mock-data.ts)** - Import all 50 investments + sponsors + assets
+- **[scripts/import-mock-data.ts](../scripts/import-mock-data.ts)** - Import all 51 investments + sponsors + assets
+- **[scripts/add-holiday-terrace.ts](../scripts/add-holiday-terrace.ts)** - Add Holiday Terrace real investment with complete due diligence
+- **[scripts/export-db-to-seed.ts](../scripts/export-db-to-seed.ts)** - Export current database to seed.sql
+- **[scripts/generate-seed-sql.ts](../scripts/generate-seed-sql.ts)** - Generate SQL seed data from mock data
+- **[scripts/test-db.ts](../scripts/test-db.ts)** - Test database connection and queries
 
 ### 3. Database Utilities
+
 - **[src/lib/db.ts](../src/lib/db.ts)** - Database connection utility
 - **[src/lib/queries.ts](../src/lib/queries.ts)** - Ready-to-use query functions
 
@@ -21,18 +28,34 @@
 # Initialize empty database with schema
 npm run db:init
 
-# Import all mock data
+# Import all mock data (TypeScript version - recommended)
 npm run db:seed
+
+# Import data from seed.sql (SQL version)
+npm run db:seed:sql
 
 # Reset database (delete + init + seed)
 npm run db:reset
+
+# Test database connection and queries
+npm run db:test
+
+# Export current database to seed.sql
+npm run db:export
+
+# Generate seed.sql from mock data
+npm run db:generate-seed
+
+# Add Holiday Terrace investment (already included in seed data)
+npm run db:add-holiday-terrace
 ```
 
 ## Current Database Contents
 
-- ✓ 50 investments (real estate + private equity)
-- ✓ 5 sponsors with contact info
-- ✓ 11 due diligence assets (PDFs, images, videos)
+- ✓ 51 investments (real estate + private equity)
+- ✓ 1 featured investment (Holiday Terrace)
+- ✓ 7 sponsors with contact info
+- ✓ 27 due diligence assets (PDFs, images, videos)
 - ✓ Investment-sponsor relationships
 
 ## Using the Database in Your App
@@ -41,10 +64,10 @@ Replace mock data imports with database queries:
 
 ```typescript
 // OLD: Import mock data
-import { mockInvestments } from './data/mockInvestments';
+import { mockInvestments } from "./data/mockInvestments";
 
 // NEW: Query from database
-import { getAllInvestments, getInvestmentById } from './lib/queries';
+import { getAllInvestments, getInvestmentById } from "./lib/queries";
 
 // In your React Router loaders:
 export async function loader() {
@@ -64,17 +87,21 @@ export async function investmentLoader({ params }) {
 ## Available Query Functions
 
 ### Investments
+
 - `getAllInvestments()` - Get all investments
 - `getInvestmentById(id)` - Get single investment
 - `getInvestmentsByType(type)` - Filter by 'real-estate' or 'private-equity'
+- `getFeaturedInvestments()` - Get investments marked as featured
 - `searchInvestments(term)` - Search by name, sponsor, or location
 - `getTopPerformingInvestments(limit)` - Sorted by projected return
 
 ### Sponsors
+
 - `getSponsorsForInvestment(investmentId)` - Get sponsors for an investment
 - `getSponsorById(id)` - Get single sponsor
 
 ### Assets
+
 - `getAssetsForInvestment(investmentId)` - Get all assets for investment
 - `getAssetById(id)` - Get single asset
 
@@ -129,18 +156,31 @@ fly ssh sftp shell
 put local-backup.db /data/iomarkets.db
 ```
 
+## Database Schema Features
+
+The database includes several advanced features:
+
+- **Foreign keys with CASCADE** - Automatic cleanup of related data
+- **Triggers** - Auto-update `updated_at` timestamps on all tables
+- **Indexes** - Optimized queries for type, location, featured status, and relationships
+- **Check constraints** - Data validation at database level (investment types, featured flag, asset types)
+- **Many-to-many relationships** - Investments can have multiple sponsors via junction table
+
 ## Database Performance
 
 Current settings in [src/lib/db.ts](../src/lib/db.ts):
 
 - **WAL mode** - Better concurrency for reads/writes
-- **Foreign keys enabled** - Data integrity
+- **Foreign keys enabled** - Data integrity enforced
 - **Connection pooling** - Single connection reused
+- **Prepared statements** - Better security and performance
 
 For production with more traffic, consider:
+
 - Read replicas via LiteFS
-- Connection pooling library
-- Query caching layer
+- Connection pooling library (e.g., better-sqlite3-pool)
+- Query caching layer (e.g., Redis)
+- Regular VACUUM operations for database optimization
 
 ## Testing Locally
 
