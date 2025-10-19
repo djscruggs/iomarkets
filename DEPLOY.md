@@ -81,9 +81,12 @@ exit
 ```
 
 The script will:
-- Initialize the database schema
-- Seed with all 50 investments, sponsors, and assets
+- Check if database already has data
+- **Skip seeding if data exists** (safe to run multiple times)
+- Initialize and seed only if database is empty
 - Verify the data was imported correctly
+
+**Important:** The script is **safe to run on every deploy** - it won't overwrite existing data unless you use the `--force` flag.
 
 **Option B: Manual setup**
 
@@ -126,21 +129,24 @@ fly open
 If you modify the mock data in `src/data/`, regenerate the seed.sql file:
 
 ```bash
-# Regenerate seed.sql from TypeScript mock data
+# 1. Regenerate seed.sql from TypeScript mock data
 npm run db:generate-seed
 
-# Commit the updated seed.sql
+# 2. Commit the updated seed.sql
 git add db/seed.sql
 git commit -m "Update seed data"
 
-# Redeploy
+# 3. Redeploy
 fly deploy
 
-# SSH in and reseed the database
+# 4. Force reseed the database (WARNING: deletes existing data!)
 fly ssh console
 cd /app
-./scripts/deploy-db.sh
+./scripts/deploy-db.sh --force
+# Type 'y' to confirm you want to delete and reseed
 ```
+
+**Note:** The `--force` flag is required to reseed an existing database. Without it, the script will detect existing data and exit safely.
 
 The seed.sql file is auto-generated and should not be edited manually.
 
