@@ -66,6 +66,27 @@ This will:
 
 After first deployment, SSH in and set up the database:
 
+**Option A: Using the automated deployment script (Recommended)**
+
+```bash
+# SSH into the app
+fly ssh console
+
+# Run the deployment script
+cd /app
+./scripts/deploy-db.sh
+
+# Exit
+exit
+```
+
+The script will:
+- Initialize the database schema
+- Seed with all 50 investments, sponsors, and assets
+- Verify the data was imported correctly
+
+**Option B: Manual setup**
+
 ```bash
 # SSH into the app
 fly ssh console
@@ -73,11 +94,11 @@ fly ssh console
 # Navigate to app directory
 cd /app
 
-# Initialize database
+# Initialize database schema
 npm run db:init
 
-# Seed with data
-npm run db:seed
+# Seed with SQL file (faster than TypeScript import)
+npm run db:seed:sql
 
 # Verify
 sqlite3 /data/iomarkets.db "SELECT COUNT(*) FROM investments;"
@@ -99,6 +120,29 @@ fly logs
 # Open in browser
 fly open
 ```
+
+## Updating Database Seed Data
+
+If you modify the mock data in `src/data/`, regenerate the seed.sql file:
+
+```bash
+# Regenerate seed.sql from TypeScript mock data
+npm run db:generate-seed
+
+# Commit the updated seed.sql
+git add db/seed.sql
+git commit -m "Update seed data"
+
+# Redeploy
+fly deploy
+
+# SSH in and reseed the database
+fly ssh console
+cd /app
+./scripts/deploy-db.sh
+```
+
+The seed.sql file is auto-generated and should not be edited manually.
 
 ## Database Backup Strategy
 

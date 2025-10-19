@@ -1,26 +1,69 @@
 -- Seed data for IOMarkets MVP
--- Populated from mock data in src/data/
+-- Auto-generated from TypeScript mock data
+-- DO NOT EDIT MANUALLY - regenerate with: npm run db:generate-seed
 
--- Note: This is a sample of the data. You would generate the full seed data
--- by running a script that converts the TypeScript mock data to SQL INSERT statements.
-
--- Sample investments (first 5 from mockInvestments)
+-- Insert all 50 investments
 INSERT INTO investments (id, name, sponsor, target_raise, amount_raised, image_url, type, location, min_investment, projected_return, term) VALUES
 ('1', 'Downtown Austin Mixed-Use Development', 'Urban Capital Partners', 5000000, 3750000, 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop', 'real-estate', 'Austin, TX', 50000, 18.5, '5 years'),
-('2', 'SaaS Growth Fund III', 'TechVentures Capital', 10000000, 8500000, 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop', 'private-equity', NULL, 100000, 25.0, '7 years'),
-('3', 'Miami Waterfront Residential Tower', 'Coastal Development Group', 15000000, 12000000, 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop', 'real-estate', 'Miami, FL', 75000, 16.0, '4 years'),
-('4', 'Healthcare Innovation Portfolio', 'LifeScience Ventures', 8000000, 5600000, 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 22.0, '6 years'),
-('5', 'Denver Industrial Park', 'Midwest Industrial REIT', 12000000, 9000000, 'https://images.unsplash.com/photo-1565008576549-57569a49371d?w=800&auto=format&fit=crop', 'real-estate', 'Denver, CO', 100000, 14.5, '10 years');
+('2', 'SaaS Growth Fund III', 'TechVentures Capital', 10000000, 8500000, 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop', 'private-equity', NULL, 100000, 25, '7 years'),
+('3', 'Miami Waterfront Residential Tower', 'Coastal Development Group', 15000000, 12000000, 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop', 'real-estate', 'Miami, FL', 75000, 16, '4 years'),
+('4', 'Healthcare Innovation Portfolio', 'LifeScience Ventures', 8000000, 5600000, 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 22, '6 years'),
+('5', 'Denver Industrial Park', 'Midwest Industrial REIT', 12000000, 9000000, 'https://images.unsplash.com/photo-1565008576549-57569a49371d?w=800&auto=format&fit=crop', 'real-estate', 'Denver, CO', 100000, 14.5, '10 years'),
+('6', 'Consumer Brand Acquisition Fund', 'Equity Growth Partners', 6000000, 4200000, 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&auto=format&fit=crop', 'private-equity', NULL, 25000, 20, '5 years'),
+('7', 'Nashville Entertainment District', 'Music City Developers', 20000000, 15000000, 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&auto=format&fit=crop', 'real-estate', 'Nashville, TN', 150000, 19, '6 years'),
+('8', 'Renewable Energy Investment Pool', 'GreenFuture Capital', 25000000, 18750000, 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop', 'private-equity', NULL, 200000, 15.5, '8 years'),
+('9', 'Phoenix Luxury Apartments', 'Desert Sky Properties', 8500000, 6375000, 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop', 'real-estate', 'Phoenix, AZ', 50000, 17, '5 years'),
+('10', 'AI/ML Startup Portfolio', 'Frontier Tech Ventures', 15000000, 10500000, 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop', 'private-equity', NULL, 100000, 30, '7 years'),
+('11', 'Seattle Office Tower Renovation', 'Pacific Northwest Holdings', 18000000, 13500000, 'https://images.unsplash.com/photo-1481253127861-534498168948?w=800&auto=format&fit=crop', 'real-estate', 'Seattle, WA', 125000, 13.5, '7 years'),
+('12', 'Fintech Growth Fund', 'Digital Finance Ventures', 12000000, 9600000, 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop', 'private-equity', NULL, 75000, 24, '6 years'),
+('13', 'Atlanta Student Housing Complex', 'Campus Living Partners', 9000000, 6300000, 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop', 'real-estate', 'Atlanta, GA', 50000, 15, '8 years'),
+('14', 'E-commerce Brand Rollup', 'Digital Commerce Group', 7500000, 5250000, 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 21.5, '5 years'),
+('15', 'Portland Retail Center', 'Northwest Retail Properties', 10000000, 7000000, 'https://images.unsplash.com/photo-1555636222-cae831e670b3?w=800&auto=format&fit=crop', 'real-estate', 'Portland, OR', 100000, 12.5, '10 years'),
+('16', 'Biotech Seed Fund II', 'BioInnovate Capital', 20000000, 14000000, 'https://images.unsplash.com/photo-1582719471137-c3967ffb1c42?w=800&auto=format&fit=crop', 'private-equity', NULL, 150000, 28, '8 years'),
+('17', 'Charlotte Distribution Center', 'Logistics Real Estate Fund', 14000000, 11200000, 'https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&auto=format&fit=crop', 'real-estate', 'Charlotte, NC', 100000, 14, '12 years'),
+('18', 'Manufacturing Automation Portfolio', 'Industrial Growth Partners', 11000000, 7700000, 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop', 'private-equity', NULL, 75000, 19.5, '6 years'),
+('19', 'Boston Life Science Campus', 'BioBay Developments', 30000000, 22500000, 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&auto=format&fit=crop', 'real-estate', 'Boston, MA', 200000, 16.5, '8 years'),
+('20', 'Cybersecurity Growth Fund', 'SecureVentures Capital', 16000000, 12800000, 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop', 'private-equity', NULL, 100000, 26, '7 years'),
+('21', 'San Diego Beach Resort', 'Coastal Hospitality Group', 22000000, 16500000, 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&auto=format&fit=crop', 'real-estate', 'San Diego, CA', 150000, 18, '6 years'),
+('22', 'Clean Tech Innovation Fund', 'Sustainable Ventures', 13000000, 9100000, 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&auto=format&fit=crop', 'private-equity', NULL, 75000, 23, '7 years'),
+('23', 'Dallas Multi-Family Portfolio', 'Lone Star Residential', 17000000, 12750000, 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop', 'real-estate', 'Dallas, TX', 100000, 15.5, '9 years'),
+('24', 'Food & Beverage Brands Fund', 'Culinary Capital Partners', 8500000, 5950000, 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 20.5, '5 years'),
+('25', 'Minneapolis Medical Office Building', 'Healthcare Properties LLC', 11500000, 8625000, 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop', 'real-estate', 'Minneapolis, MN', 75000, 13, '15 years'),
+('26', 'EdTech Venture Portfolio', 'Learning Innovation Ventures', 9500000, 6650000, 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 24.5, '6 years'),
+('27', 'Raleigh Tech Park Development', 'Research Triangle Properties', 19000000, 14250000, 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop', 'real-estate', 'Raleigh, NC', 125000, 17.5, '7 years'),
+('28', 'Wellness & Fitness Brand Rollup', 'Active Living Capital', 7000000, 4900000, 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 22.5, '5 years'),
+('29', 'Las Vegas Entertainment Venue', 'Entertainment Properties Group', 24000000, 18000000, 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&auto=format&fit=crop', 'real-estate', 'Las Vegas, NV', 200000, 19.5, '8 years'),
+('30', 'Infrastructure Technology Fund', 'Smart Cities Ventures', 18000000, 12600000, 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop', 'private-equity', NULL, 100000, 21, '8 years'),
+('31', 'Salt Lake City Ski Resort', 'Mountain Hospitality Partners', 28000000, 21000000, 'https://images.unsplash.com/photo-1551524559-8af4e6624178?w=800&auto=format&fit=crop', 'real-estate', 'Salt Lake City, UT', 200000, 16, '10 years'),
+('32', 'Supply Chain Software Portfolio', 'Logistics Tech Ventures', 12500000, 8750000, 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&auto=format&fit=crop', 'private-equity', NULL, 75000, 25.5, '6 years'),
+('33', 'Philadelphia Historic Renovation', 'Heritage Properties Fund', 13500000, 10125000, 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&auto=format&fit=crop', 'real-estate', 'Philadelphia, PA', 100000, 14.5, '6 years'),
+('34', 'Pet Care Services Consolidation', 'Animal Wellness Capital', 6500000, 4550000, 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 19, '5 years'),
+('35', 'Tampa Bay Waterfront Development', 'Gulf Coast Developers', 21000000, 15750000, 'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=800&auto=format&fit=crop', 'real-estate', 'Tampa, FL', 150000, 17, '7 years'),
+('36', 'Automation & Robotics Fund', 'NextGen Industry Partners', 15500000, 10850000, 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop', 'private-equity', NULL, 100000, 27, '7 years'),
+('37', 'San Antonio Mixed-Use Plaza', 'Alamo City Developments', 16500000, 12375000, 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&auto=format&fit=crop', 'real-estate', 'San Antonio, TX', 100000, 15, '8 years'),
+('38', 'Digital Media Production Fund', 'Content Creation Ventures', 8000000, 5600000, 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 23.5, '5 years'),
+('39', 'Chicago High-Rise Apartments', 'Windy City Properties', 26000000, 19500000, 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop', 'real-estate', 'Chicago, IL', 175000, 16.5, '7 years'),
+('40', 'Aerospace Components Manufacturer', 'Advanced Manufacturing Capital', 14500000, 10150000, 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop', 'private-equity', NULL, 100000, 20, '8 years'),
+('41', 'Orlando Theme Park Adjacent Hotel', 'Family Hospitality Partners', 19500000, 14625000, 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop', 'real-estate', 'Orlando, FL', 125000, 18.5, '9 years'),
+('42', 'Sustainable Agriculture Tech', 'AgTech Innovation Fund', 11000000, 7700000, 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&auto=format&fit=crop', 'private-equity', NULL, 75000, 22, '6 years'),
+('43', 'Pittsburgh Innovation District', 'Steel City Developments', 17500000, 13125000, 'https://images.unsplash.com/photo-1486718448742-163732cd1544?w=800&auto=format&fit=crop', 'real-estate', 'Pittsburgh, PA', 125000, 14, '10 years'),
+('44', 'Gaming & Esports Portfolio', 'Digital Entertainment Ventures', 13000000, 9100000, 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop', 'private-equity', NULL, 100000, 29, '6 years'),
+('45', 'Sacramento Senior Living Community', 'ElderCare Properties Group', 20000000, 15000000, 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&auto=format&fit=crop', 'real-estate', 'Sacramento, CA', 150000, 13.5, '12 years'),
+('46', 'Mobile App Development Portfolio', 'AppVentures Capital', 9000000, 6300000, 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop', 'private-equity', NULL, 50000, 26.5, '5 years'),
+('47', 'Columbus Logistics Hub', 'Central Logistics Properties', 16000000, 12000000, 'https://images.unsplash.com/photo-1566140967404-b8b3932483f5?w=800&auto=format&fit=crop', 'real-estate', 'Columbus, OH', 100000, 13, '15 years'),
+('48', 'Smart Home Technology Fund', 'Connected Living Ventures', 10500000, 7350000, 'https://images.unsplash.com/photo-1558002038-1055907df827?w=800&auto=format&fit=crop', 'private-equity', NULL, 75000, 24, '6 years'),
+('49', 'New Orleans French Quarter Hotel', 'Big Easy Hospitality', 23000000, 17250000, 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&auto=format&fit=crop', 'real-estate', 'New Orleans, LA', 175000, 17.5, '8 years'),
+('50', 'Electric Vehicle Infrastructure', 'EV Future Capital', 22000000, 15400000, 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&auto=format&fit=crop', 'private-equity', NULL, 150000, 21.5, '9 years');
 
--- Sample sponsors
+-- Insert all 5 sponsors
 INSERT INTO sponsors (id, name, email, phone, linkedin_url, photo_url, total_deals, total_value) VALUES
 ('s1', 'Michael Rodriguez', 'mrodriguez@urbancapital.com', '+1 (512) 555-0123', 'https://linkedin.com/in/michael-rodriguez', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop', 23, 450000000),
 ('s2', 'Sarah Chen', 'schen@urbancapital.com', '+1 (512) 555-0124', 'https://linkedin.com/in/sarah-chen', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&auto=format&fit=crop', 18, 320000000),
-('s3', 'David Park', 'dpark@techventures.com', '+1 (650) 555-0200', 'https://linkedin.com/in/david-park', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop', 31, 890000000),
 ('s4', 'James Thompson', 'jthompson@urbancapital.com', '+1 (512) 555-0125', 'https://linkedin.com/in/james-thompson', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop', 27, 580000000),
-('s5', 'Emily Martinez', 'emartinez@urbancapital.com', '+1 (512) 555-0126', 'https://linkedin.com/in/emily-martinez', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop', 21, 410000000);
+('s5', 'Emily Martinez', 'emartinez@urbancapital.com', '+1 (512) 555-0126', 'https://linkedin.com/in/emily-martinez', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop', 21, 410000000),
+('s3', 'David Park', 'dpark@techventures.com', '+1 (650) 555-0200', 'https://linkedin.com/in/david-park', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop', 31, 890000000);
 
--- Investment-Sponsor relationships
+-- Insert investment-sponsor relationships
 INSERT INTO investment_sponsors (investment_id, sponsor_id) VALUES
 ('1', 's1'),
 ('1', 's2'),
@@ -28,7 +71,7 @@ INSERT INTO investment_sponsors (investment_id, sponsor_id) VALUES
 ('1', 's5'),
 ('2', 's3');
 
--- Sample due diligence assets for investment 1
+-- Insert all 11 due diligence assets
 INSERT INTO due_diligence_assets (id, investment_id, name, type, url, thumbnail_url, uploaded_date, size) VALUES
 ('a1', '1', 'Investment Memorandum', 'pdf', 'https://example.com/memo.pdf', NULL, '2024-01-15', '2.4 MB'),
 ('a2', '1', 'Financial Projections', 'pdf', 'https://example.com/projections.pdf', NULL, '2024-01-20', '1.8 MB'),
@@ -37,10 +80,7 @@ INSERT INTO due_diligence_assets (id, investment_id, name, type, url, thumbnail_
 ('a5', '1', 'Site Photos - Interior', 'image', 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&auto=format&fit=crop', 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&auto=format&fit=crop', '2024-01-25', '2.8 MB'),
 ('a6', '1', 'Property Walkthrough Video', 'video', 'https://www.youtube.com/watch?v=5ZDBnjgQCtA', 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&auto=format&fit=crop', '2024-01-28', '45 MB'),
 ('a7', '1', 'Market Analysis Report', 'pdf', 'https://example.com/market-analysis.pdf', NULL, '2024-02-01', '3.6 MB'),
-('a8', '1', 'Legal Documents', 'pdf', 'https://example.com/legal.pdf', NULL, '2024-02-03', '4.2 MB');
-
--- Sample due diligence assets for investment 2
-INSERT INTO due_diligence_assets (id, investment_id, name, type, url, uploaded_date, size) VALUES
-('a9', '2', 'Investment Thesis', 'pdf', 'https://example.com/thesis.pdf', '2024-01-10', '1.9 MB'),
-('a10', '2', 'Company Financials', 'pdf', 'https://example.com/financials.pdf', '2024-01-12', '2.1 MB'),
-('a11', '2', 'Pitch Deck', 'pdf', 'https://example.com/deck.pdf', '2024-01-18', '8.5 MB');
+('a8', '1', 'Legal Documents', 'pdf', 'https://example.com/legal.pdf', NULL, '2024-02-03', '4.2 MB'),
+('a9', '2', 'Investment Thesis', 'pdf', 'https://example.com/thesis.pdf', NULL, '2024-01-10', '1.9 MB'),
+('a10', '2', 'Company Financials', 'pdf', 'https://example.com/financials.pdf', NULL, '2024-01-12', '2.1 MB'),
+('a11', '2', 'Pitch Deck', 'pdf', 'https://example.com/deck.pdf', NULL, '2024-01-18', '8.5 MB');
