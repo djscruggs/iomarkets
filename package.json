@@ -13,7 +13,9 @@
     "db:seed:sql": "sqlite3 ${DATABASE_PATH:-db/iomarkets.db} < db/seed.sql",
     "db:reset": "rm -f db/iomarkets.db && npm run db:init && npm run db:seed",
     "db:test": "tsx scripts/test-db.ts",
-    "db:generate-seed": "tsx scripts/generate-seed-sql.ts"
+    "db:generate-seed": "tsx scripts/generate-seed-sql.ts",
+    "db:export": "tsx scripts/export-db-to-seed.ts",
+    "db:add-holiday-terrace": "tsx scripts/add-holiday-terrace.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.53.0",
