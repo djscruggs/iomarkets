@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Send, Bot, Download, ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
+import {
+  Send,
+  Bot,
+  Download,
+  ChevronDown,
+  ChevronUp,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
 
 interface Message {
   id: string;
@@ -82,14 +90,16 @@ export function AIChat() {
 
   // Determine height based on state
   const getHeight = () => {
-    if (isCollapsed) return 'h-auto';
-    if (isExpanded) return 'h-[50vh]'; // Half screen height
-    if (hasInteracted) return 'h-[350px]'; // Normal height after interaction
-    return 'h-[140px]'; // Minimal height for initial message
+    if (isCollapsed) return "h-auto";
+    if (isExpanded) return "h-[70vh]"; // 70% of screen height for expanded mode
+    if (hasInteracted) return "h-[350px]"; // Normal height after interaction
+    return "h-[200px]"; // Minimal height for initial message (20% taller than 140px)
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col transition-all duration-300 ${getHeight()}`}>
+    <div
+      className={`bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col transition-all duration-300 ${getHeight()}`}
+    >
       {/* Header */}
       <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -113,7 +123,11 @@ export function AIChat() {
               className="text-gray-600 hover:text-gray-800 transition-colors cursor-pointer p-1"
               title={isExpanded ? "Normal Size" : "Expand to Half Screen"}
             >
-              {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              {isExpanded ? (
+                <Minimize2 className="w-4 h-4" />
+              ) : (
+                <Maximize2 className="w-4 h-4" />
+              )}
             </button>
           )}
           <button
@@ -121,77 +135,81 @@ export function AIChat() {
             className="text-gray-600 hover:text-gray-800 transition-colors cursor-pointer p-1"
             title={isCollapsed ? "Expand" : "Collapse"}
           >
-            {isCollapsed ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {isCollapsed ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Messages */}
       {!isCollapsed && (
-      <div className="flex-1 overflow-y-auto p-3 space-y-3">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${
-              message.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
+        <div className="flex-1 overflow-y-auto p-3 space-y-3">
+          {messages.map((message) => (
             <div
-              className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                message.role === "user"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-900"
+              key={message.id}
+              className={`flex ${
+                message.role === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              <p className="text-xs">{message.content}</p>
-              <p
-                className={`text-[10px] mt-1 ${
-                  message.role === "user" ? "text-blue-100" : "text-gray-500"
+              <div
+                className={`max-w-[80%] rounded-lg px-3 py-2 ${
+                  message.role === "user"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-900"
                 }`}
               >
-                {message.timestamp.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-lg px-3 py-2">
-              <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" />
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-100" />
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-200" />
+                <p className="text-xs">{message.content}</p>
+                <p
+                  className={`text-[10px] mt-1 ${
+                    message.role === "user" ? "text-blue-100" : "text-gray-500"
+                  }`}
+                >
+                  {message.timestamp.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          ))}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-gray-100 rounded-lg px-3 py-2">
+                <div className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" />
+                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-100" />
+                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-200" />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Input */}
       {!isCollapsed && (
-      <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question about this deal..."
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            disabled={!input.trim() || isLoading}
-            className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-            <Send className="w-4 h-4" />
-          </button>
-        </div>
-      </form>
+        <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask a question about this deal..."
+              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || isLoading}
+              className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </form>
       )}
     </div>
   );
