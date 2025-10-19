@@ -8,6 +8,8 @@ primary_region = 'dfw'
 
 [env]
   DATABASE_PATH = "/data/iomarkets.db"
+  GOOGLE_APPLICATION_CREDENTIALS = "/app/credentials/google-credentials.json"
+  GCP_REGION = "us-central1"
 
 [mounts]
   source = "iomarkets_data"

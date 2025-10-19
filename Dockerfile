@@ -41,14 +41,21 @@ RUN npm prune --omit=dev
 # Final stage for app image
 FROM base
 
-# Install SQLite3 runtime (needed for database operations)
+# Install SQLite3 runtime and ca-certificates (needed for GCP API calls)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y sqlite3 && \
+    apt-get install --no-install-recommends -y sqlite3 ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy built application from build stage
 COPY --from=build /app /app
 
+# Create directory for Google Cloud credentials
+RUN mkdir -p /app/credentials
+
+# Copy and set permissions for startup script
+COPY scripts/startup.sh /app/startup.sh
+RUN chmod +x /app/startup.sh
+
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD [ "npm", "run", "start" ]
+CMD [ "/app/startup.sh" ]
