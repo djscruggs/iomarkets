@@ -11,6 +11,15 @@
  * 5. Updates the database with indexing status
  */
 
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+// Load environment variables from .env.local
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
+
 import { getInvestmentById, getAssetsForInvestment } from '../src/lib/queries.js';
 import {
   upsertDataStore,
@@ -18,9 +27,10 @@ import {
   updateDocumentCount,
   getDataStoreInfo,
 } from '../src/lib/queries-rag.js';
-import { uploadFromUrl } from '../src/lib/gcp/storage.js';
+import { uploadFromUrl, uploadDocument } from '../src/lib/gcp/storage.js';
 import { createDataStore, importDocuments } from '../src/lib/gcp/discovery-engine.js';
 import { getDataStoreId } from '../src/lib/gcp/config.js';
+import fs from 'fs';
 
 async function main() {
   const investmentId = process.argv[2];
@@ -70,7 +80,22 @@ async function main() {
         // Generate a clean filename
         const filename = `${asset.id}.pdf`;
 
-        const gcsUri = await uploadFromUrl(investmentId, asset.url, filename);
+        let gcsUri: string;
+
+        // Check if URL is a local path (starts with /)
+        if (asset.url.startsWith('/')) {
+          // Upload from local file system
+          const localPath = path.join(__dirname, '..', 'public', asset.url);
+
+          if (!fs.existsSync(localPath)) {
+            throw new Error(`File not found: ${localPath}`);
+          }
+
+          gcsUri = await uploadDocument(investmentId, localPath, filename);
+        } else {
+          // Upload from URL
+          gcsUri = await uploadFromUrl(investmentId, asset.url, filename);
+        }
 
         gcsUris.push(gcsUri);
         trackDocumentIndexing(investmentId, asset.id, gcsUri, 'pending');
