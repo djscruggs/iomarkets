@@ -52,7 +52,7 @@ async function searchDatabaseDocuments(
   console.log(`Searching database for investment ${investmentId} with query: "${query}"`);
 
   try {
-    const documents = searchDocuments(investmentId, query, 5);
+    const documents = searchDocuments(investmentId, query);
 
     console.log(`Found ${documents.length} matching documents`);
 
