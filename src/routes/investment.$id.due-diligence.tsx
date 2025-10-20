@@ -203,6 +203,7 @@ function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef, assets, 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
   // When no asset is selected, show AI chat prominently
   if (!selectedAsset) {
     return (
@@ -219,9 +220,15 @@ function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef, assets, 
             </div>
           </div>
 
-          {/* AI Chat - visible at bottom */}
+          {/* AI Chat - visible at bottom - use key to preserve state */}
           <div ref={aiChatRef} className="max-w-4xl mx-auto w-full pb-6">
-            <AIChat autoFocus={true} startExpanded={true} investmentId={investmentId} onCitationClick={handleCitationClick} />
+            <AIChat
+              key={investmentId}
+              autoFocus={true}
+              startExpanded={true}
+              investmentId={investmentId}
+              onCitationClick={handleCitationClick}
+            />
           </div>
         </div>
       </div>
@@ -236,9 +243,13 @@ function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef, assets, 
         <AssetViewer asset={selectedAsset} onAskAI={onAskAI} />
       </div>
 
-      {/* AI Chat - fixed at bottom of content area */}
+      {/* AI Chat - fixed at bottom - use same key to preserve state */}
       <div ref={aiChatRef} className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-gray-50 p-4">
-        <AIChat investmentId={investmentId} onCitationClick={handleCitationClick} />
+        <AIChat
+          key={investmentId}
+          investmentId={investmentId}
+          onCitationClick={handleCitationClick}
+        />
       </div>
     </div>
   )
