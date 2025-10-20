@@ -11,20 +11,30 @@ import {
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+interface Citation {
+  source: string;
+  title?: string;
+  uri?: string;
+  snippet?: string;
+  assetId?: string;
+}
+
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  citations?: Citation[];
 }
 
 interface AIChatProps {
   autoFocus?: boolean;
   startExpanded?: boolean;
   investmentId?: string;
+  onCitationClick?: (assetId: string) => void;
 }
 
-export function AIChat({ autoFocus = false, startExpanded = false, investmentId }: AIChatProps) {
+export function AIChat({ autoFocus = false, startExpanded = false, investmentId, onCitationClick }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -100,20 +110,24 @@ export function AIChat({ autoFocus = false, startExpanded = false, investmentId 
         throw new Error(data.error || data.message || 'Failed to get response');
       }
 
-      // Format citations if present
-      let content = data.response;
-      if (data.citations && data.citations.length > 0) {
-        const citationText = data.citations
-          .map((c: any, i: number) => `[${i + 1}] ${c.source}`)
-          .join('\n');
-        content += `\n\nSources:\n${citationText}`;
-      }
+      // Store citations separately, extracting assetId from source
+      const citations: Citation[] = data.citations?.map((c: any) => {
+        // Extract assetId from source like "Document 1 (ht-ex-2-lpa-51-04182018-pdf)"
+        const assetIdMatch = c.source.match(/\(([^)]+)\)/);
+        const assetId = assetIdMatch ? assetIdMatch[1] : undefined;
+
+        return {
+          ...c,
+          assetId,
+        };
+      }) || [];
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content,
+        content: data.response,
         timestamp: new Date(),
+        citations,
       };
 
       setMessages((prev) => [...prev, aiMessage]);
@@ -244,6 +258,25 @@ export function AIChat({ autoFocus = false, startExpanded = false, investmentId 
                     <p>{message.content}</p>
                   )}
                 </div>
+
+                {/* Citations */}
+                {message.citations && message.citations.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <p className="text-[10px] font-semibold text-gray-600 mb-1.5">Sources:</p>
+                    <div className="space-y-1">
+                      {message.citations.map((citation, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => citation.assetId && onCitationClick?.(citation.assetId)}
+                          className="block w-full text-left text-[10px] text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          disabled={!citation.assetId}
+                        >
+                          [{idx + 1}] {citation.title || citation.source}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <p
                   className={`text-[10px] mt-1 ${
                     message.role === "user" ? "text-blue-100" : "text-gray-500"

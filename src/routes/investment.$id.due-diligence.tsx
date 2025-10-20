@@ -190,9 +190,19 @@ interface ContentAreaProps {
   selectedAsset: DueDiligenceAsset | null
   onAskAI: () => void
   aiChatRef: React.RefObject<HTMLDivElement>
+  assets: DueDiligenceAsset[]
+  onSelectAsset: (asset: DueDiligenceAsset | null) => void
 }
 
-function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef }: ContentAreaProps) {
+function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef, assets, onSelectAsset }: ContentAreaProps) {
+  const handleCitationClick = (assetId: string) => {
+    const asset = assets.find(a => a.id === assetId);
+    if (asset) {
+      onSelectAsset(asset);
+      // Scroll to top to show the selected document
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
   // When no asset is selected, show AI chat prominently
   if (!selectedAsset) {
     return (
@@ -211,7 +221,7 @@ function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef }: Conten
 
           {/* AI Chat - visible at bottom */}
           <div ref={aiChatRef} className="max-w-4xl mx-auto w-full pb-6">
-            <AIChat autoFocus={true} startExpanded={true} investmentId={investmentId} />
+            <AIChat autoFocus={true} startExpanded={true} investmentId={investmentId} onCitationClick={handleCitationClick} />
           </div>
         </div>
       </div>
@@ -228,7 +238,7 @@ function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef }: Conten
 
       {/* AI Chat - fixed at bottom of content area */}
       <div ref={aiChatRef} className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-gray-50 p-4">
-        <AIChat investmentId={investmentId} />
+        <AIChat investmentId={investmentId} onCitationClick={handleCitationClick} />
       </div>
     </div>
   )
@@ -320,6 +330,8 @@ export default function DueDiligence() {
           selectedAsset={selectedAsset}
           onAskAI={handleAskAI}
           aiChatRef={aiChatRef}
+          assets={assets}
+          onSelectAsset={setSelectedAsset}
         />
       </div>
     </div>
