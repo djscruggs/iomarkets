@@ -11,7 +11,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-interface Citation {
+export interface Citation {
   source: string;
   title?: string;
   uri?: string;
@@ -31,7 +31,7 @@ interface AIChatProps {
   autoFocus?: boolean;
   startExpanded?: boolean;
   investmentId?: string;
-  onCitationClick?: (assetId: string) => void;
+  onCitationClick?: (citation: Citation) => void;
 }
 
 export function AIChat({ autoFocus = false, startExpanded = false, investmentId, onCitationClick }: AIChatProps) {
@@ -267,7 +267,7 @@ export function AIChat({ autoFocus = false, startExpanded = false, investmentId,
                       {message.citations.map((citation, idx) => (
                         <button
                           key={idx}
-                          onClick={() => citation.assetId && onCitationClick?.(citation.assetId)}
+                          onClick={() => onCitationClick?.(citation)}
                           className="block w-full text-left text-[10px] text-blue-600 hover:text-blue-800 hover:underline transition-colors cursor-pointer"
                           disabled={!citation.assetId}
                         >

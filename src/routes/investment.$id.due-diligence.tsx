@@ -6,7 +6,7 @@ import { DueDiligenceAsset, Sponsor } from '../types/dueDiligence'
 import { DealHeader } from '../components/DealHeader'
 import { SponsorCard } from '../components/SponsorCard'
 import { AssetViewer } from '../components/AssetViewer'
-import { AIChat } from '../components/AIChat'
+import { AIChat, Citation } from '../components/AIChat'
 import { Investment } from '../types/investment'
 
 interface DueDiligenceLoaderData {
@@ -195,13 +195,39 @@ interface ContentAreaProps {
 }
 
 function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef, assets, onSelectAsset }: ContentAreaProps) {
-  const handleCitationClick = (assetId: string) => {
-    const asset = assets.find(a => a.id === assetId);
-    if (asset) {
-      onSelectAsset(asset);
-      // Scroll to top to show the selected document
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  const handleCitationClick = (citation: Citation) => {
+    const asset = assets.find(a => a.id === citation.assetId);
+    if (!asset) return;
+
+    // Extract meaningful search terms from the snippet
+    const snippet = citation.snippet || '';
+
+    // Clean up the snippet and extract key words
+    const searchWords = snippet
+      .replace(/\.\.\./g, ' ')  // Remove ellipsis
+      .replace(/[^\w\s]/g, ' ')  // Remove punctuation
+      .split(/\s+/)              // Split into words
+      .filter(word => word.length > 3)  // Only words longer than 3 chars
+      .slice(0, 10)              // Take first 10 words
+      .join(' ')
+      .trim();
+
+    // Build URL with search fragment
+    // Works in Chrome/Edge - browsers will highlight the search term
+    const baseUrl = asset.url;
+    const searchParam = searchWords
+      ? `#search=${encodeURIComponent(searchWords)}`
+      : '';
+
+    // Open in new tab with search highlighting
+    const newWindow = window.open(
+      `${baseUrl}${searchParam}`,
+      `pdf-${citation.assetId}`,  // Named window - reuses same tab for same doc
+      'width=1400,height=900'
+    );
+
+    // Focus the new window
+    newWindow?.focus();
   };
 
   // When no asset is selected, show AI chat prominently
