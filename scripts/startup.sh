@@ -8,7 +8,7 @@ echo "🚀 Starting IOMarkets..."
 if [ -n "$GOOGLE_CREDENTIALS_JSON" ]; then
   echo "📝 Writing Google Cloud credentials..."
   mkdir -p /app/credentials
-  echo "$GOOGLE_CREDENTIALS_JSON" > /app/credentials/google-credentials.json
+  printf '%s' "$GOOGLE_CREDENTIALS_JSON" > /app/credentials/google-credentials.json
   echo "✅ Credentials file created successfully"
 else
   echo "⚠️  Warning: GOOGLE_CREDENTIALS_JSON not set. RAG features will not work."
