@@ -96,15 +96,22 @@ export async function chat(
       const contentLower = content.toLowerCase();
       const matchIndex = contentLower.indexOf(queryLower);
 
+      // For small documents (<10K chars), include full content
+      // For larger documents, use intelligent snippets
       let snippet = '';
-      if (matchIndex !== -1) {
-        // Extract 250 characters before and after the match
-        const start = Math.max(0, matchIndex - 250);
-        const end = Math.min(content.length, matchIndex + queryLower.length + 250);
+      const MAX_FULL_DOC_SIZE = 10000;
+
+      if (content.length <= MAX_FULL_DOC_SIZE) {
+        // Small document - include everything
+        snippet = content;
+      } else if (matchIndex !== -1) {
+        // Large document with keyword match - extract context around match
+        const start = Math.max(0, matchIndex - 500);
+        const end = Math.min(content.length, matchIndex + queryLower.length + 500);
         snippet = '...' + content.slice(start, end) + '...';
       } else {
-        // If no direct match, use first 500 characters
-        snippet = content.slice(0, 500) + (content.length > 500 ? '...' : '');
+        // Large document without match - use first 2000 characters
+        snippet = content.slice(0, 2000) + (content.length > 2000 ? '...' : '');
       }
 
       const title = `Document ${index + 1} (${result.assetId})`;
