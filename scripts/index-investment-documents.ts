@@ -85,11 +85,22 @@ async function main() {
 
         // Check if URL is a local path (starts with /)
         if (asset.url.startsWith('/')) {
-          // Upload from local file system
-          const localPath = path.join(__dirname, '..', 'public', asset.url);
+          // Try multiple possible locations for the file
+          const possiblePaths = [
+            path.join(__dirname, '..', 'public', asset.url),  // Development/local
+            path.join(__dirname, '..', 'build', 'client', asset.url),  // Production build
+          ];
 
-          if (!fs.existsSync(localPath)) {
-            throw new Error(`File not found: ${localPath}`);
+          let localPath: string | null = null;
+          for (const tryPath of possiblePaths) {
+            if (fs.existsSync(tryPath)) {
+              localPath = tryPath;
+              break;
+            }
+          }
+
+          if (!localPath) {
+            throw new Error(`File not found in any location. Tried: ${possiblePaths.join(', ')}`);
           }
 
           gcsUri = await uploadDocument(investmentId, localPath, filename);
@@ -138,8 +149,24 @@ async function main() {
         // Check if file is local or remote
         let extractedText: string;
         if (asset.url.startsWith('/')) {
-          // Extract from local file
-          const localPath = path.join(__dirname, '..', 'public', asset.url);
+          // Try multiple possible locations for the file
+          const possiblePaths = [
+            path.join(__dirname, '..', 'public', asset.url),  // Development/local
+            path.join(__dirname, '..', 'build', 'client', asset.url),  // Production build
+          ];
+
+          let localPath: string | null = null;
+          for (const tryPath of possiblePaths) {
+            if (fs.existsSync(tryPath)) {
+              localPath = tryPath;
+              break;
+            }
+          }
+
+          if (!localPath) {
+            throw new Error(`File not found in any location. Tried: ${possiblePaths.join(', ')}`);
+          }
+
           extractedText = await extractTextFromLocalPDF(localPath);
         } else {
           // Extract from GCS
