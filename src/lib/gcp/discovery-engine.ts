@@ -79,6 +79,7 @@ export async function createDataStore(investmentId: string): Promise<string> {
 
 /**
  * Import documents into a Data Store
+ * For PDF files, we need to use the document schema (not content schema)
  */
 export async function importDocuments(
   investmentId: string,
@@ -96,9 +97,13 @@ export async function importDocuments(
     parent,
     gcsSource: {
       inputUris: gcsUris,
-      dataSchema: 'content',
+      // Use 'document' schema for unstructured files like PDFs
+      // This tells Discovery Engine to parse the PDF content
+      dataSchema: 'document',
     },
     reconciliationMode: 'INCREMENTAL',
+    // Enable auto-generation of IDs and URIs
+    autoGenerateIds: true,
   });
 
   console.log('Import operation started, waiting for completion...');
