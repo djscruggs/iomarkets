@@ -139,7 +139,7 @@ export async function chat(
 Relevant Documents:
 ${documentContext}
 
-Please provide a clear answer based on this information. If the documents don't contain enough information to answer, say so.`;
+Please provide a clear answer based on this information. At the end of your response, on a new line, add "SOURCES:" followed by the numbers of the documents you actually used (e.g., "SOURCES: 1, 3, 5"). If the documents don't contain enough information to answer, say so.`;
   } else {
     // No results found, inform the user
     prompt = `${message}
@@ -168,7 +168,7 @@ Note: No relevant documents were found in the database for this investment. Plea
     systemInstruction: {
       parts: [
         {
-          text: 'You are an AI assistant that helps investors understand investment opportunities. Answer questions based on the provided documents. Be specific and cite information from the documents. If information is not in the documents, say so clearly.',
+          text: 'You are an AI assistant that helps investors understand investment opportunities. Answer questions directly and concisely based on the provided documents. Do not use phrases like "Based on the provided documents" or similar preambles - just answer the question. Be specific and if information is not in the documents, say so clearly.',
         },
       ],
     },
@@ -194,11 +194,33 @@ Note: No relevant documents were found in the database for this investment. Plea
     });
 
     const response = result.response;
-    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    let text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Parse out the SOURCES line if Gemini included it
+    const sourcesMatch = text.match(/SOURCES:\s*([\d,\s]+)/i);
+    let filteredCitations = citations;
+
+    if (sourcesMatch) {
+      // Extract document numbers that Gemini actually used
+      const usedDocNumbers = sourcesMatch[1]
+        .split(',')
+        .map(n => parseInt(n.trim()))
+        .filter(n => !isNaN(n));
+
+      // Remove the SOURCES line from the response text
+      text = text.replace(/\n*SOURCES:\s*[\d,\s]+\s*/i, '').trim();
+
+      // Filter citations to only include documents Gemini used
+      filteredCitations = citations.filter((_, index) =>
+        usedDocNumbers.includes(index + 1)
+      );
+
+      console.log(`Filtered citations from ${citations.length} to ${filteredCitations.length} based on Gemini's sources`);
+    }
 
     return {
       content: text,
-      citations,
+      citations: filteredCitations,
       groundingMetadata: { resultCount: results.length },
     };
   } catch (error: any) {
