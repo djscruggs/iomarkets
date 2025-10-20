@@ -8,6 +8,8 @@ import {
   Maximize2,
   Minimize2,
 } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -233,7 +235,15 @@ export function AIChat({ autoFocus = false, startExpanded = false, investmentId 
                     : "bg-gray-100 text-gray-900"
                 }`}
               >
-                <p className="text-xs">{message.content}</p>
+                <div className="text-xs prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-1">
+                  {message.role === "assistant" ? (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {message.content}
+                    </ReactMarkdown>
+                  ) : (
+                    <p>{message.content}</p>
+                  )}
+                </div>
                 <p
                   className={`text-[10px] mt-1 ${
                     message.role === "user" ? "text-blue-100" : "text-gray-500"
