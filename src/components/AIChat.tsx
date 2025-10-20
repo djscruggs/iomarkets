@@ -268,7 +268,7 @@ export function AIChat({ autoFocus = false, startExpanded = false, investmentId,
                         <button
                           key={idx}
                           onClick={() => citation.assetId && onCitationClick?.(citation.assetId)}
-                          className="block w-full text-left text-[10px] text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          className="block w-full text-left text-[10px] text-blue-600 hover:text-blue-800 hover:underline transition-colors cursor-pointer"
                           disabled={!citation.assetId}
                         >
                           [{idx + 1}] {citation.title || citation.source}
