@@ -1,12 +1,12 @@
 /**
  * PDF Text Extraction Service
  *
- * Extracts text content from PDF documents using pdf-parse
- * Can be upgraded to use Google Cloud Document AI for better OCR
+ * Extracts text content from PDF documents using Google Cloud Document AI with pdf-parse fallback
  */
 
 import { getGCPConfig } from './config.js';
 import { Storage } from '@google-cloud/storage';
+import { DocumentProcessorServiceClient } from '@google-cloud/documentai';
 import * as fs from 'fs';
 import { createRequire } from 'module';
 
@@ -64,7 +64,7 @@ export async function extractTextFromPDF(gcsUri: string): Promise<string> {
 }
 
 /**
- * Extract text from a local PDF file using pdf-parse
+ * Extract text from a local PDF file using Document AI with pdf-parse fallback
  *
  * @param localFilePath - Path to local PDF file
  * @returns Extracted text content
@@ -73,21 +73,68 @@ export async function extractTextFromLocalPDF(localFilePath: string): Promise<st
   console.log(`Extracting text from ${localFilePath}...`);
 
   try {
-    // Read the PDF file
+    // Try pdf-parse first (it's free and fast)
     const dataBuffer = fs.readFileSync(localFilePath);
-
-    // Parse PDF with pdf-parse
-    // When using require(), the function is directly available
     const data = await pdfParse(dataBuffer);
+    const pdfParseText = data.text;
 
-    // Extract text
-    const text = data.text;
+    // If pdf-parse extracted meaningful content (>100 chars), use it
+    if (pdfParseText.length > 100) {
+      console.log(`✓ Extracted ${pdfParseText.length} characters using pdf-parse`);
+      return pdfParseText;
+    }
 
-    console.log(`✓ Extracted ${text.length} characters from ${localFilePath}`);
+    // Otherwise, fall back to Document AI for better extraction
+    console.log(`⚠️  pdf-parse only extracted ${pdfParseText.length} characters, trying Document AI...`);
+    const documentAIText = await extractWithDocumentAI(dataBuffer);
+    console.log(`✓ Extracted ${documentAIText.length} characters using Document AI`);
+    return documentAIText;
 
-    return text;
   } catch (error: any) {
     console.error(`Error extracting text from ${localFilePath}:`, error.message);
     throw new Error(`Failed to extract text from PDF: ${error.message}`);
   }
+}
+
+/**
+ * Extract text using Google Cloud Document AI OCR
+ *
+ * @param pdfBuffer - PDF file buffer
+ * @returns Extracted text content
+ */
+async function extractWithDocumentAI(pdfBuffer: Buffer): Promise<string> {
+  const config = getGCPConfig();
+
+  // Read credentials
+  const credentialsContent = fs.readFileSync(config.credentials, 'utf8');
+  const credentials = JSON.parse(credentialsContent);
+
+  // Create Document AI client
+  const client = new DocumentProcessorServiceClient({ credentials });
+
+  // You need to create a processor in GCP Console first
+  // For now, we'll use the OCR processor type
+  // The processor name format is: projects/{project}/locations/{location}/processors/{processor}
+  const processorName = process.env.DOCUMENT_AI_PROCESSOR_NAME ||
+    `projects/${config.projectId}/locations/us/processors/YOUR_PROCESSOR_ID`;
+
+  if (processorName.includes('YOUR_PROCESSOR_ID')) {
+    throw new Error(
+      'Document AI processor not configured. Please set DOCUMENT_AI_PROCESSOR_NAME environment variable. ' +
+      'Create a processor at: https://console.cloud.google.com/ai/document-ai/processors'
+    );
+  }
+
+  // Process the document
+  const [result] = await client.processDocument({
+    name: processorName,
+    rawDocument: {
+      content: pdfBuffer.toString('base64'),
+      mimeType: 'application/pdf',
+    },
+  });
+
+  // Extract text from all pages
+  const text = result.document?.text || '';
+  return text;
 }
