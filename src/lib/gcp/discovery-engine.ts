@@ -102,8 +102,6 @@ export async function importDocuments(
       dataSchema: 'document',
     },
     reconciliationMode: 'INCREMENTAL',
-    // Enable auto-generation of IDs and URIs
-    autoGenerateIds: true,
   });
 
   console.log('Import operation started, waiting for completion...');
