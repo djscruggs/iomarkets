@@ -230,13 +230,13 @@ function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef, assets, 
     newWindow?.focus();
   };
 
-  // When no asset is selected, show AI chat prominently
-  if (!selectedAsset) {
-    return (
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Empty state with AI chat */}
-        <div className="flex-1 overflow-auto p-6 flex flex-col">
-          <div className="flex-1 flex items-start justify-center pt-12 pb-6">
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Main scrollable area */}
+      <div className="flex-1 overflow-auto p-6">
+        {!selectedAsset ? (
+          /* Empty state */
+          <div className="flex items-start justify-center pt-12 pb-6">
             <div className="text-center max-w-md">
               <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600 font-medium text-lg mb-2">Select a document to view</p>
@@ -245,34 +245,23 @@ function ContentArea({ investmentId, selectedAsset, onAskAI, aiChatRef, assets, 
               </p>
             </div>
           </div>
-
-          {/* AI Chat - visible at bottom - use key to preserve state */}
-          <div ref={aiChatRef} className="max-w-4xl mx-auto w-full pb-6">
-            <AIChat
-              key={investmentId}
-              autoFocus={true}
-              startExpanded={true}
-              investmentId={investmentId}
-              onCitationClick={handleCitationClick}
-            />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // When asset is selected, show it with AI chat fixed at bottom
-  return (
-    <div className="flex-1 flex flex-col overflow-hidden relative">
-      {/* Asset viewer - scrollable area */}
-      <div className="flex-1 overflow-auto p-6 pb-[200px]">
-        <AssetViewer asset={selectedAsset} onAskAI={onAskAI} />
+        ) : (
+          /* Asset viewer */
+          <AssetViewer asset={selectedAsset} onAskAI={onAskAI} />
+        )}
       </div>
 
-      {/* AI Chat - fixed at bottom - use same key to preserve state */}
-      <div ref={aiChatRef} className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-gray-50 p-4">
+      {/* AI Chat - always rendered here, preserves state */}
+      <div
+        ref={aiChatRef}
+        className={`border-t border-gray-200 bg-gray-50 p-4 ${
+          !selectedAsset ? 'max-w-4xl mx-auto w-full' : 'w-full'
+        }`}
+      >
         <AIChat
           key={investmentId}
+          autoFocus={!selectedAsset}
+          startExpanded={!selectedAsset}
           investmentId={investmentId}
           onCitationClick={handleCitationClick}
         />
