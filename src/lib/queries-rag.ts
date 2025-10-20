@@ -201,7 +201,7 @@ export function deleteDataStoreRecord(investmentId: string): void {
 export function searchDocuments(
   investmentId: string,
   query: string,
-  limit: number = 5
+  limit: number = 10
 ): Array<{
   id: string;
   assetId: string;
@@ -211,38 +211,14 @@ export function searchDocuments(
 }> {
   const db = getDb();
 
-  // Extract keywords from query (words 4+ characters, excluding common words)
-  const commonWords = ['what', 'where', 'when', 'which', 'this', 'that', 'these', 'those', 'the', 'is', 'are', 'was', 'were'];
-  const keywords = query.toLowerCase()
-    .split(/\s+/)
-    .filter(word => word.length >= 3 && !commonWords.includes(word));
+  // Simple approach: return all indexed documents for this investment
+  // Gemini is smart enough to determine which documents are relevant to the query
+  // This ensures we don't miss documents due to poor keyword matching
+  const sql = `SELECT id, asset_id as assetId, gcs_uri as gcsUri, content, content_length as contentLength
+     FROM indexed_documents
+     WHERE investment_id = ? AND status = 'indexed'
+     ORDER BY content_length DESC
+     LIMIT ?`;
 
-  // If we have keywords, search for any of them
-  // Otherwise, search for the whole query
-  if (keywords.length > 0) {
-    // Build a WHERE clause that matches any keyword
-    const conditions = keywords.map(() => 'content LIKE ?').join(' OR ');
-    const patterns = keywords.map(keyword => `%${keyword}%`);
-
-    const sql = `SELECT id, asset_id as assetId, gcs_uri as gcsUri, content, content_length as contentLength
-       FROM indexed_documents
-       WHERE investment_id = ? AND status = 'indexed' AND (${conditions})
-       ORDER BY content_length DESC
-       LIMIT ?`;
-
-    return db.prepare(sql).all(investmentId, ...patterns, limit) as any[];
-  } else {
-    // Fallback to simple search
-    const searchPattern = `%${query}%`;
-
-    return db
-      .prepare(
-        `SELECT id, asset_id as assetId, gcs_uri as gcsUri, content, content_length as contentLength
-         FROM indexed_documents
-         WHERE investment_id = ? AND status = 'indexed' AND content LIKE ?
-         ORDER BY content_length DESC
-         LIMIT ?`
-      )
-      .all(investmentId, searchPattern, limit) as any[];
-  }
+  return db.prepare(sql).all(investmentId, limit) as any[];
 }
