@@ -51,12 +51,18 @@ export function AIChat({ autoFocus = false, startExpanded = false, investmentId,
   const [hasInteracted, setHasInteracted] = useState(startExpanded);
   const [hasUserMessages, setHasUserMessages] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (autoFocus && inputRef.current) {
       inputRef.current.focus();
     }
   }, [autoFocus]);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,6 +307,8 @@ export function AIChat({ autoFocus = false, startExpanded = false, investmentId,
               </div>
             </div>
           )}
+          {/* Scroll anchor */}
+          <div ref={messagesEndRef} />
         </div>
       )}
 
