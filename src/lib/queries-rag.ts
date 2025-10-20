@@ -91,10 +91,12 @@ export function trackDocumentIndexing(
   assetId: string,
   gcsUri: string,
   status: 'pending' | 'indexed' | 'failed' = 'pending',
-  errorMessage: string | null = null
+  errorMessage: string | null = null,
+  content: string | null = null
 ): void {
   const db = getDb();
   const id = `${investmentId}-${assetId}`;
+  const contentLength = content ? content.length : null;
 
   const existing = db
     .prepare(`SELECT id FROM indexed_documents WHERE id = ?`)
@@ -103,14 +105,14 @@ export function trackDocumentIndexing(
   if (existing) {
     db.prepare(
       `UPDATE indexed_documents
-       SET gcs_uri = ?, status = ?, error_message = ?, indexed_at = CASE WHEN ? = 'indexed' THEN CURRENT_TIMESTAMP ELSE indexed_at END
+       SET gcs_uri = ?, status = ?, error_message = ?, content = ?, content_length = ?, indexed_at = CASE WHEN ? = 'indexed' THEN CURRENT_TIMESTAMP ELSE indexed_at END
        WHERE id = ?`
-    ).run(gcsUri, status, errorMessage, status, id);
+    ).run(gcsUri, status, errorMessage, content, contentLength, status, id);
   } else {
     db.prepare(
-      `INSERT INTO indexed_documents (id, investment_id, asset_id, gcs_uri, status, error_message)
-       VALUES (?, ?, ?, ?, ?, ?)`
-    ).run(id, investmentId, assetId, gcsUri, status, errorMessage);
+      `INSERT INTO indexed_documents (id, investment_id, asset_id, gcs_uri, status, error_message, content, content_length)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(id, investmentId, assetId, gcsUri, status, errorMessage, content, contentLength);
   }
 }
 
@@ -190,4 +192,57 @@ export function deleteDataStoreRecord(investmentId: string): void {
   db.prepare(`DELETE FROM indexed_documents WHERE investment_id = ?`).run(
     investmentId
   );
+}
+
+/**
+ * Search documents by keyword (simple text search)
+ * Returns documents with their content that contain the search query
+ */
+export function searchDocuments(
+  investmentId: string,
+  query: string,
+  limit: number = 5
+): Array<{
+  id: string;
+  assetId: string;
+  gcsUri: string;
+  content: string;
+  contentLength: number;
+}> {
+  const db = getDb();
+
+  // Extract keywords from query (words 4+ characters, excluding common words)
+  const commonWords = ['what', 'where', 'when', 'which', 'this', 'that', 'these', 'those', 'the', 'is', 'are', 'was', 'were'];
+  const keywords = query.toLowerCase()
+    .split(/\s+/)
+    .filter(word => word.length >= 3 && !commonWords.includes(word));
+
+  // If we have keywords, search for any of them
+  // Otherwise, search for the whole query
+  if (keywords.length > 0) {
+    // Build a WHERE clause that matches any keyword
+    const conditions = keywords.map(() => 'content LIKE ?').join(' OR ');
+    const patterns = keywords.map(keyword => `%${keyword}%`);
+
+    const sql = `SELECT id, asset_id as assetId, gcs_uri as gcsUri, content, content_length as contentLength
+       FROM indexed_documents
+       WHERE investment_id = ? AND status = 'indexed' AND (${conditions})
+       ORDER BY content_length DESC
+       LIMIT ?`;
+
+    return db.prepare(sql).all(investmentId, ...patterns, limit) as any[];
+  } else {
+    // Fallback to simple search
+    const searchPattern = `%${query}%`;
+
+    return db
+      .prepare(
+        `SELECT id, asset_id as assetId, gcs_uri as gcsUri, content, content_length as contentLength
+         FROM indexed_documents
+         WHERE investment_id = ? AND status = 'indexed' AND content LIKE ?
+         ORDER BY content_length DESC
+         LIMIT ?`
+      )
+      .all(investmentId, searchPattern, limit) as any[];
+  }
 }

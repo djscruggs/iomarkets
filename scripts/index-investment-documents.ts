@@ -28,8 +28,9 @@ import {
   getDataStoreInfo,
 } from '../src/lib/queries-rag.js';
 import { uploadFromUrl, uploadDocument } from '../src/lib/gcp/storage.js';
-import { createDataStore, importDocuments } from '../src/lib/gcp/discovery-engine.js';
+import { createDataStore, importDocuments, importDocumentsWithContent, type DocumentWithContent } from '../src/lib/gcp/discovery-engine.js';
 import { getDataStoreId } from '../src/lib/gcp/config.js';
+import { extractTextFromLocalPDF, extractTextFromPDF } from '../src/lib/gcp/document-ai.js';
 import fs from 'fs';
 
 async function main() {
@@ -113,35 +114,84 @@ async function main() {
 
     console.log(`✓ Uploaded ${gcsUris.length} document(s) to Cloud Storage`);
 
-    // 5. Create Data Store
-    console.log(`\n🗄️  Creating Data Store in Discovery Engine...`);
+    // NOTE: We're using database-based RAG, so we skip Discovery Engine creation
+    // If you want to use Discovery Engine in the future, uncomment the lines below:
+    //
+    // console.log(`\n🗄️  Creating Data Store in Discovery Engine...`);
+    // upsertDataStore(investmentId, 'indexing');
+    // const dataStoreId = await createDataStore(investmentId);
+    // console.log(`✓ Data Store created: ${dataStoreId}`);
+
     upsertDataStore(investmentId, 'indexing');
 
-    const dataStoreId = await createDataStore(investmentId);
-    console.log(`✓ Data Store created: ${dataStoreId}`);
+    // 5. Extract text from PDFs
+    console.log(`\n📄 Extracting text from PDFs using Document AI...`);
+    const documentsWithContent: DocumentWithContent[] = [];
 
-    // 6. Import documents into Data Store
-    console.log(`\n📥 Importing documents into Data Store...`);
-    console.log(`⏳ This may take several minutes...`);
+    for (let i = 0; i < pdfAssets.length; i++) {
+      const asset = pdfAssets[i];
+      const gcsUri = gcsUris[i];
 
-    await importDocuments(investmentId, gcsUris);
+      try {
+        console.log(`  [${i + 1}/${pdfAssets.length}] Extracting: ${asset.name}...`);
 
-    console.log(`✓ Documents successfully imported`);
+        // Check if file is local or remote
+        let extractedText: string;
+        if (asset.url.startsWith('/')) {
+          // Extract from local file
+          const localPath = path.join(__dirname, '..', 'public', asset.url);
+          extractedText = await extractTextFromLocalPDF(localPath);
+        } else {
+          // Extract from GCS
+          extractedText = await extractTextFromPDF(gcsUri);
+        }
 
-    // 7. Update database with success status
+        documentsWithContent.push({
+          id: asset.id,
+          title: asset.name,
+          uri: gcsUri,
+          content: extractedText,
+        });
+
+        console.log(`    ✓ Extracted ${extractedText.length} characters`);
+      } catch (error: any) {
+        console.error(`    ✗ Failed to extract text: ${error.message}`);
+        trackDocumentIndexing(investmentId, asset.id, gcsUri, 'failed', error.message);
+      }
+    }
+
+    if (documentsWithContent.length === 0) {
+      throw new Error('No text could be extracted from any documents');
+    }
+
+    console.log(`✓ Extracted text from ${documentsWithContent.length} document(s)`);
+
+    // NOTE: We're using database-based RAG, so we skip Discovery Engine import
+    // If you want to use Discovery Engine in the future, uncomment the lines below:
+    //
+    // console.log(`\n📥 Importing documents with content into Data Store...`);
+    // await importDocumentsWithContent(investmentId, documentsWithContent);
+    // console.log(`✓ Documents successfully imported`);
+
+    // 6. Update database with success status and store content
     upsertDataStore(investmentId, 'ready');
     updateDocumentCount(investmentId, gcsUris.length);
 
-    // Mark all documents as indexed
-    for (const asset of pdfAssets) {
-      trackDocumentIndexing(investmentId, asset.id, '', 'indexed');
+    // Mark all documents as indexed with their extracted content
+    for (const doc of documentsWithContent) {
+      // Find the matching asset and gcsUri
+      const asset = pdfAssets.find(a => a.id === doc.id);
+      const gcsUri = doc.uri;
+
+      if (asset) {
+        trackDocumentIndexing(investmentId, asset.id, gcsUri, 'indexed', null, doc.content);
+      }
     }
 
     console.log(`\n========================================`);
     console.log(`✅ SUCCESS!`);
     console.log(`========================================`);
     console.log(`Investment: ${investment.name}`);
-    console.log(`Data Store ID: ${dataStoreId}`);
     console.log(`Documents indexed: ${gcsUris.length}`);
     console.log(`Status: ready`);
     console.log(`\nYou can now query this investment using the AI chat.`);

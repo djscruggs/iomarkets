@@ -5,8 +5,8 @@
  */
 
 import { VertexAI, HarmCategory, HarmBlockThreshold } from '@google-cloud/vertexai';
-import { SearchServiceClient } from '@google-cloud/discoveryengine';
-import { getGCPConfig, getDataStoreId } from './config.js';
+import { getGCPConfig } from './config.js';
+import { searchDocuments } from '../queries-rag.js';
 
 let vertexAI: VertexAI | null = null;
 
@@ -43,41 +43,31 @@ export interface Citation {
 }
 
 /**
- * Search Discovery Engine Data Store for relevant documents
+ * Search database for relevant documents
  */
-async function searchDataStore(
-  dataStoreId: string,
+async function searchDatabaseDocuments(
+  investmentId: string,
   query: string
 ): Promise<{ results: any[]; summary: string }> {
-  const config = getGCPConfig();
-  const searchClient = new SearchServiceClient({
-    keyFilename: config.credentials,
-  });
-
-  const servingConfig = `projects/${config.projectId}/locations/global/collections/default_collection/dataStores/${dataStoreId}/servingConfigs/default_config`;
-
-  console.log(`Searching Data Store: ${dataStoreId} for query: "${query}"`);
+  console.log(`Searching database for investment ${investmentId} with query: "${query}"`);
 
   try {
-    const [response] = await searchClient.search({
-      servingConfig,
-      query,
-      pageSize: 5,
-      contentSearchSpec: {
-        snippetSpec: {
-          returnSnippet: true,
-        },
-      },
-    });
+    const documents = searchDocuments(investmentId, query, 5);
 
-    const results = response.results || [];
-    const summary = response.summary?.summaryText || '';
+    console.log(`Found ${documents.length} matching documents`);
 
-    console.log(`Found ${results.length} results`);
+    // Convert to a format similar to Discovery Engine results
+    const results = documents.map(doc => ({
+      id: doc.id,
+      assetId: doc.assetId,
+      uri: doc.gcsUri,
+      content: doc.content,
+      contentLength: doc.contentLength,
+    }));
 
-    return { results, summary };
+    return { results, summary: '' };
   } catch (error: any) {
-    console.error('Error searching Data Store:', error);
+    console.error('Error searching database:', error);
     throw new Error(`Failed to search documents: ${error.message}`);
   }
 }
@@ -92,35 +82,47 @@ export async function chat(
 ): Promise<ChatResponse> {
   const client = getVertexAIClient();
   const config = getGCPConfig();
-  const dataStoreId = getDataStoreId(investmentId);
 
-  // Step 1: Search Discovery Engine for relevant content
-  const { results, summary } = await searchDataStore(dataStoreId, message);
+  // Step 1: Search database for relevant content
+  const { results } = await searchDatabaseDocuments(investmentId, message);
 
   // Extract document snippets and citations
   const citations: Citation[] = [];
   const documentContext = results
     .map((result, index) => {
-      const doc = result.document;
-      const snippet = doc?.derivedStructData?.snippets?.[0]?.snippet || '';
-      const title = doc?.derivedStructData?.title || `Document ${index + 1}`;
-      const uri = doc?.derivedStructData?.link || '';
+      // Create a snippet from the content (first 500 characters around the query)
+      const content = result.content || '';
+      const queryLower = message.toLowerCase();
+      const contentLower = content.toLowerCase();
+      const matchIndex = contentLower.indexOf(queryLower);
 
-      if (snippet) {
-        citations.push({
-          source: title,
-          title,
-          uri,
-          snippet,
-        });
-        return `[${index + 1}] ${title}\n${snippet}`;
+      let snippet = '';
+      if (matchIndex !== -1) {
+        // Extract 250 characters before and after the match
+        const start = Math.max(0, matchIndex - 250);
+        const end = Math.min(content.length, matchIndex + queryLower.length + 250);
+        snippet = '...' + content.slice(start, end) + '...';
+      } else {
+        // If no direct match, use first 500 characters
+        snippet = content.slice(0, 500) + (content.length > 500 ? '...' : '');
       }
-      return '';
+
+      const title = `Document ${index + 1} (${result.assetId})`;
+      const uri = result.uri || '';
+
+      citations.push({
+        source: title,
+        title,
+        uri,
+        snippet,
+      });
+
+      return `[${index + 1}] ${title}\n${snippet}`;
     })
     .filter(Boolean)
     .join('\n\n');
 
-  console.log(`Found ${citations.length} citations`);
+  console.log(`Found ${citations.length} citations from database`);
 
   // Step 2: If we have search results, use them as context for Gemini
   let prompt = message;
@@ -130,7 +132,12 @@ export async function chat(
 Relevant Documents:
 ${documentContext}
 
-${summary ? `Summary: ${summary}\n\n` : ''}Please provide a clear answer based on this information. If the documents don't contain enough information to answer, say so.`;
+Please provide a clear answer based on this information. If the documents don't contain enough information to answer, say so.`;
+  } else {
+    // No results found, inform the user
+    prompt = `${message}
+
+Note: No relevant documents were found in the database for this investment. Please make sure the documents have been indexed.`;
   }
 
   // Configure the model
@@ -185,7 +192,7 @@ ${summary ? `Summary: ${summary}\n\n` : ''}Please provide a clear answer based o
     return {
       content: text,
       citations,
-      groundingMetadata: { summary, resultCount: results.length },
+      groundingMetadata: { resultCount: results.length },
     };
   } catch (error: any) {
     console.error('Error in chat:', error);

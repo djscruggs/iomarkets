@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { SearchServiceClient } from '@google-cloud/discoveryengine';
+import { getDataStoreId } from '../src/lib/gcp/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +17,7 @@ dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
 async function testSearch() {
   try {
     const projectId = process.env.GCP_PROJECT_ID!;
-    const dataStoreId = 'iomarkets-51';
+    const dataStoreId = getDataStoreId('51');
 
     const searchClient = new SearchServiceClient({
       keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
@@ -31,6 +32,11 @@ async function testSearch() {
       servingConfig,
       query: 'Holiday Terrace',
       pageSize: 10,
+      contentSearchSpec: {
+        snippetSpec: {
+          returnSnippet: true,
+        },
+      },
     });
 
     console.log('Results:', response.results?.length || 0);

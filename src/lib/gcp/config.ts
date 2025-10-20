@@ -47,11 +47,20 @@ export function getGCPConfig(): GCPConfig {
 
 /**
  * Generate a data store ID for an investment
- * Appends -v3 to avoid conflicts with deleted data stores (deletion takes 2 hours)
+ * Appends -v10 to avoid conflicts with deleted data stores (deletion takes 2 hours)
  */
 export function getDataStoreId(investmentId: string): string {
   const config = getGCPConfig();
-  return `${config.dataStoreIdPrefix}${investmentId}-v3`;
+  return `${config.dataStoreIdPrefix}${investmentId}-v10`;
+}
+
+/**
+ * Generate an engine/app ID for an investment
+ * Same version suffix as data store
+ */
+export function getEngineId(investmentId: string): string {
+  const config = getGCPConfig();
+  return `${config.dataStoreIdPrefix}${investmentId}-engine-v10`;
 }
 
 /**
