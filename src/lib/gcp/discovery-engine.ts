@@ -6,6 +6,7 @@
 
 import { DocumentServiceClient, DataStoreServiceClient, EngineServiceClient, SearchServiceClient } from '@google-cloud/discoveryengine';
 import { getGCPConfig, getDataStoreId, getEngineId } from './config.js';
+import fs from 'fs';
 
 let documentClient: DocumentServiceClient | null = null;
 let dataStoreClient: DataStoreServiceClient | null = null;
@@ -16,9 +17,14 @@ let dataStoreClient: DataStoreServiceClient | null = null;
 function getDocumentClient(): DocumentServiceClient {
   if (!documentClient) {
     const config = getGCPConfig();
+
+    // Read credentials file and parse as JSON
+    const credentialsContent = fs.readFileSync(config.credentials, 'utf8');
+    const credentials = JSON.parse(credentialsContent);
+
     documentClient = new DocumentServiceClient({
       projectId: config.projectId,
-      keyFilename: config.credentials,
+      credentials,
     });
   }
   return documentClient;
@@ -30,9 +36,14 @@ function getDocumentClient(): DocumentServiceClient {
 function getDataStoreClient(): DataStoreServiceClient {
   if (!dataStoreClient) {
     const config = getGCPConfig();
+
+    // Read credentials file and parse as JSON
+    const credentialsContent = fs.readFileSync(config.credentials, 'utf8');
+    const credentials = JSON.parse(credentialsContent);
+
     dataStoreClient = new DataStoreServiceClient({
       projectId: config.projectId,
-      keyFilename: config.credentials,
+      credentials,
     });
   }
   return dataStoreClient;
@@ -242,10 +253,15 @@ export async function listDataStoreDocuments(investmentId: string): Promise<any[
  * This is required for chat-enabled search with unstructured content
  */
 export async function createSearchEngine(investmentId: string): Promise<string> {
-  const client = new EngineServiceClient({
-    keyFilename: getGCPConfig().credentials,
-  });
   const config = getGCPConfig();
+
+  // Read credentials file and parse as JSON
+  const credentialsContent = fs.readFileSync(config.credentials, 'utf8');
+  const credentials = JSON.parse(credentialsContent);
+
+  const client = new EngineServiceClient({
+    credentials,
+  });
   const dataStoreId = getDataStoreId(investmentId);
   const engineId = getEngineId(investmentId);
 

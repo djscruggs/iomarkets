@@ -24,9 +24,13 @@ export async function extractTextFromPDF(gcsUri: string): Promise<string> {
   // This is simpler than setting up GCS input for Document AI
   const config = getGCPConfig();
 
+  // Read credentials file and parse as JSON
+  const credentialsContent = fs.readFileSync(config.credentials, 'utf8');
+  const credentials = JSON.parse(credentialsContent);
+
   const storage = new Storage({
     projectId: config.projectId,
-    keyFilename: config.credentials,
+    credentials,
   });
 
   console.log(`Extracting text from ${gcsUri}...`);

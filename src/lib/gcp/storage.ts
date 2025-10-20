@@ -17,9 +17,19 @@ let storageClient: Storage | null = null;
 export function getStorageClient(): Storage {
   if (!storageClient) {
     const config = getGCPConfig();
+
+    // Read credentials file and parse as JSON for more reliable authentication
+    let credentials;
+    try {
+      const credentialsContent = fs.readFileSync(config.credentials, 'utf8');
+      credentials = JSON.parse(credentialsContent);
+    } catch (error: any) {
+      throw new Error(`Failed to read credentials file: ${error.message}`);
+    }
+
     storageClient = new Storage({
       projectId: config.projectId,
-      keyFilename: config.credentials,
+      credentials,
     });
   }
   return storageClient;
