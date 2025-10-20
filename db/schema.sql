@@ -108,6 +108,8 @@ CREATE TABLE IF NOT EXISTS indexed_documents (
   indexed_at DATETIME,
   status TEXT CHECK(status IN ('pending', 'indexed', 'failed')) DEFAULT 'pending',
   error_message TEXT,
+  content TEXT,
+  content_length INTEGER,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (investment_id) REFERENCES investments(id) ON DELETE CASCADE,
   FOREIGN KEY (asset_id) REFERENCES due_diligence_assets(id) ON DELETE CASCADE
@@ -117,3 +119,4 @@ CREATE TABLE IF NOT EXISTS indexed_documents (
 CREATE INDEX IF NOT EXISTS idx_investment_data_stores_status ON investment_data_stores(status);
 CREATE INDEX IF NOT EXISTS idx_indexed_documents_investment_id ON indexed_documents(investment_id);
 CREATE INDEX IF NOT EXISTS idx_indexed_documents_status ON indexed_documents(status);
+CREATE INDEX IF NOT EXISTS idx_indexed_documents_content ON indexed_documents(content_length);
