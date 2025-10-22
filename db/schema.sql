@@ -115,8 +115,21 @@ CREATE TABLE IF NOT EXISTS indexed_documents (
   FOREIGN KEY (asset_id) REFERENCES due_diligence_assets(id) ON DELETE CASCADE
 );
 
+-- RAG: Track RagStore corpus information for deals
+CREATE TABLE IF NOT EXISTS rag_stores (
+  investment_id TEXT PRIMARY KEY,
+  corpus_id TEXT NOT NULL,
+  document_ids TEXT NOT NULL, -- JSON array of document IDs
+  status TEXT CHECK(status IN ('pending', 'ready', 'error')) DEFAULT 'pending',
+  uploaded_at DATETIME,
+  error_message TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (investment_id) REFERENCES investments(id) ON DELETE CASCADE
+);
+
 -- RAG Indexes
 CREATE INDEX IF NOT EXISTS idx_investment_data_stores_status ON investment_data_stores(status);
 CREATE INDEX IF NOT EXISTS idx_indexed_documents_investment_id ON indexed_documents(investment_id);
 CREATE INDEX IF NOT EXISTS idx_indexed_documents_status ON indexed_documents(status);
 CREATE INDEX IF NOT EXISTS idx_indexed_documents_content ON indexed_documents(content_length);
+CREATE INDEX IF NOT EXISTS idx_rag_stores_status ON rag_stores(status);

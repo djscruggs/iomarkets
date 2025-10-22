@@ -7,7 +7,7 @@
  */
 
 import type { Route } from "./+types/api.chat";
-import { chat, type ChatMessage, type ChatResponse } from '../lib/gcp/vertex-ai.js';
+import { chat, type ChatMessage, type ChatResponse } from '../lib/gcp/gen-ai-hybrid.js';
 import { getDataStoreInfo } from '../lib/queries-rag.js';
 import { getInvestmentById } from '../lib/queries.js';
 

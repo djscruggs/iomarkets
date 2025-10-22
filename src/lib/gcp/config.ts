@@ -11,6 +11,7 @@ export interface GCPConfig {
   storageBucket: string;
   dataStoreIdPrefix: string;
   geminiModelName: string;
+  apiKey: string;
 }
 
 /**
@@ -24,6 +25,7 @@ export function getGCPConfig(): GCPConfig {
     storageBucket: process.env.CLOUD_STORAGE_BUCKET || '',
     dataStoreIdPrefix: process.env.DATA_STORE_ID_PREFIX || 'iomarkets-dd-',
     geminiModelName: process.env.GEMINI_MODEL_NAME || 'gemini-2.0-flash-exp',
+    apiKey: process.env.GOOGLE_API_KEY || '',
   };
 
   // Validate required fields
@@ -31,6 +33,7 @@ export function getGCPConfig(): GCPConfig {
     'projectId',
     'credentials',
     'storageBucket',
+    'apiKey',
   ];
 
   const missing = requiredFields.filter(field => !config[field]);

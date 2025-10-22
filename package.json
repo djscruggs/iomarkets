@@ -17,14 +17,19 @@
     "db:export": "tsx scripts/export-db-to-seed.ts",
     "db:add-holiday-terrace": "tsx scripts/add-holiday-terrace.ts",
     "rag:index": "tsx scripts/index-investment-documents.ts",
-    "rag:status": "tsx scripts/check-indexing-status.ts"
+    "rag:status": "tsx scripts/check-indexing-status.ts",
+    "genai:index-deal-51": "tsx scripts/index-deal-51-genai.ts",
+    "genai:index-deal-51-ragstore": "tsx scripts/index-deal-51-ragstore.ts",
+    "genai:index-deal-51-hybrid": "tsx scripts/index-deal-51-hybrid.ts",
+    "genai:test-deal-51": "tsx scripts/test-deal-51-chat.ts",
+    "genai:test-deal-51-ragstore": "tsx scripts/test-deal-51-ragstore.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.53.0",
     "@google-cloud/discoveryengine": "^2.5.1",
     "@google-cloud/documentai": "^9.5.0",
     "@google-cloud/storage": "^7.17.2",
-    "@google-cloud/vertexai": "^1.10.0",
+    "@google/genai": "^1.26.0",
     "@react-router/node": "^7.9.4",
     "@react-router/serve": "^7.9.4",
     "better-sqlite3": "^12.4.1",
