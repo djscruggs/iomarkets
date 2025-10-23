@@ -50,18 +50,42 @@ try {
     `).run();
     console.log(`✓ Deleted ${deletedInvestments.changes} investments`);
 
-    // 6. Delete all RAG-related data for old investments
-    db.prepare('DELETE FROM investment_data_stores WHERE investment_id != \'51\'').run();
-    db.prepare('DELETE FROM indexed_documents WHERE investment_id != \'51\'').run();
-    db.prepare('DELETE FROM rag_stores WHERE investment_id != \'51\'').run();
-    console.log('✓ Cleaned up RAG data');
+    // 6. Delete all RAG-related data for old investments (if tables exist)
+    let ragTablesFound = 0;
+    try {
+      db.prepare('DELETE FROM investment_data_stores WHERE investment_id != \'51\'').run();
+      ragTablesFound++;
+    } catch (e) {
+      // Table doesn't exist, skip
+    }
+    try {
+      db.prepare('DELETE FROM indexed_documents WHERE investment_id != \'51\'').run();
+      ragTablesFound++;
+    } catch (e) {
+      // Table doesn't exist, skip
+    }
+    try {
+      db.prepare('DELETE FROM rag_stores WHERE investment_id != \'51\'').run();
+      ragTablesFound++;
+    } catch (e) {
+      // Table doesn't exist, skip
+    }
+    if (ragTablesFound > 0) {
+      console.log(`✓ Cleaned up RAG data (${ragTablesFound} tables found)`);
+    } else {
+      console.log('✓ No RAG tables found (skipped)');
+    }
 
-    // 7. Delete all bookmarks for deleted investments
-    const deletedBookmarks = db.prepare(`
-      DELETE FROM bookmarks
-      WHERE investment_id != '51'
-    `).run();
-    console.log(`✓ Deleted ${deletedBookmarks.changes} bookmarks`);
+    // 7. Delete all bookmarks for deleted investments (if table exists)
+    try {
+      const deletedBookmarks = db.prepare(`
+        DELETE FROM bookmarks
+        WHERE investment_id != '51'
+      `).run();
+      console.log(`✓ Deleted ${deletedBookmarks.changes} bookmarks`);
+    } catch (e) {
+      console.log('✓ No bookmarks table found (skipped)');
+    }
   });
 
   // Execute the migration
