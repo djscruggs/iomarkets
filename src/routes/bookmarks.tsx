@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLoaderData, LoaderFunctionArgs, MetaFunction } from 'react-router-dom';
+import { Link, useLoaderData, MetaFunction } from 'react-router-dom';
 import { TrendingUp, DollarSign, ArrowLeft } from 'lucide-react';
 import { FaBookmark } from 'react-icons/fa';
 import { InvestmentCard } from '../components/InvestmentCard';
@@ -28,25 +28,68 @@ interface BookmarksLoaderData {
   bookmarks: Bookmark[];
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = () => {
   return [
     { title: 'My Bookmarks - IOMarkets' },
     { name: 'description', content: 'View your bookmarked investment opportunities.' },
   ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<BookmarksLoaderData> {
+export async function loader(): Promise<BookmarksLoaderData> {
   try {
-    const url = new URL(request.url);
-    const apiUrl = `${url.origin}/api/bookmarks`;
-    const response = await fetch(apiUrl);
-    const data = await response.json();
+    // Import database utilities directly instead of making HTTP request
+    const { getDb } = await import('../lib/db.js');
     
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to fetch bookmarks');
-    }
+    const db = getDb();
+    const MOCK_USER_ID = 'user-123';
     
-    return { bookmarks: data.bookmarks || [] };
+    const stmt = db.prepare(`
+      SELECT b.*, i.*
+      FROM bookmarks b
+      JOIN investments i ON b.investment_id = i.id
+      WHERE b.user_id = ?
+      ORDER BY b.created_at DESC
+    `);
+    
+    const bookmarks = stmt.all(MOCK_USER_ID) as Array<{
+      id: string;
+      user_id: string;
+      investment_id: string;
+      created_at: string;
+      name: string;
+      sponsor: string;
+      target_raise: number;
+      amount_raised: number;
+      image_url: string;
+      type: string;
+      location: string;
+      min_investment: number;
+      projected_return: number;
+      term: string;
+      featured: number;
+    }>;
+    
+    const formattedBookmarks = bookmarks.map(bookmark => ({
+      id: bookmark.id,
+      investmentId: bookmark.investment_id,
+      createdAt: bookmark.created_at,
+      investment: {
+        id: bookmark.investment_id,
+        name: bookmark.name,
+        sponsor: bookmark.sponsor,
+        targetRaise: bookmark.target_raise,
+        amountRaised: bookmark.amount_raised,
+        imageUrl: bookmark.image_url,
+        type: bookmark.type,
+        location: bookmark.location,
+        minInvestment: bookmark.min_investment,
+        projectedReturn: bookmark.projected_return,
+        term: bookmark.term,
+        featured: bookmark.featured === 1,
+      }
+    }));
+    
+    return { bookmarks: formattedBookmarks };
   } catch (error) {
     console.error('Error loading bookmarks:', error);
     return { bookmarks: [] };

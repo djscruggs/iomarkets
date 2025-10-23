@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useFetcher } from 'react-router';
 import { FaBookmark } from 'react-icons/fa';
 
 interface BookmarkButtonProps {
@@ -15,12 +16,26 @@ export function BookmarkButton({
   onBookmarkChange
 }: BookmarkButtonProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const fetcher = useFetcher();
+  const isLoading = fetcher.state !== 'idle';
 
   // Check if investment is bookmarked on mount
   useEffect(() => {
     checkBookmarkStatus();
   }, [investmentId]);
+
+  // Handle fetcher response
+  useEffect(() => {
+    if (fetcher.data && fetcher.state === 'idle') {
+      if (fetcher.data.success) {
+        const newBookmarkStatus = !isBookmarked;
+        setIsBookmarked(newBookmarkStatus);
+        onBookmarkChange?.(newBookmarkStatus);
+      } else if (fetcher.data.error) {
+        console.error('Error toggling bookmark:', fetcher.data.error);
+      }
+    }
+  }, [fetcher.data, fetcher.state]);
 
   const checkBookmarkStatus = async () => {
     try {
@@ -38,39 +53,14 @@ export function BookmarkButton({
     }
   };
 
-  const toggleBookmark = async () => {
+  const toggleBookmark = () => {
     if (isLoading) return;
     
-    setIsLoading(true);
-    
-    try {
-      const action = isBookmarked ? 'remove' : 'add';
-      const response = await fetch('/api/bookmarks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          investmentId,
-          action,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        const newBookmarkStatus = !isBookmarked;
-        setIsBookmarked(newBookmarkStatus);
-        onBookmarkChange?.(newBookmarkStatus);
-      } else {
-        console.error('Error toggling bookmark:', data.error);
-        // You could show a toast notification here
-      }
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    const action = isBookmarked ? 'remove' : 'add';
+    fetcher.submit(
+      { investmentId, action },
+      { method: 'POST', action: '/api/bookmarks', encType: 'application/json' }
+    );
   };
 
   const sizeClasses = {
