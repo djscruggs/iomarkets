@@ -1,30 +1,31 @@
-import { Link } from 'react-router'
-import { Investment } from '../types/investment'
-import { BookmarkButton } from './BookmarkButton'
+import { Link } from "react-router";
+import { Investment } from "../types/investment";
+import { BookmarkButton } from "./BookmarkButton";
 
 interface InvestmentCardProps {
-  investment: Investment
-  onBookmarkChange?: (isBookmarked: boolean) => void
+  investment: Investment;
+  onBookmarkChange?: (isBookmarked: boolean) => void;
 }
 
-export function InvestmentCard({ investment, onBookmarkChange }: InvestmentCardProps) {
-  const percentRaised = (investment.amountRaised / investment.targetRaise) * 100
+export function InvestmentCard({
+  investment,
+  onBookmarkChange,
+}: InvestmentCardProps) {
+  const percentRaised =
+    (investment.amountRaised / investment.targetRaise) * 100;
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   return (
-    <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      <Link
-        to={`/investment/${investment.id}`}
-        className="block"
-      >
+    <div className="group cursor-pointer bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+      <Link to={`/investment/${investment.id}`} className="block">
         <div className="aspect-[4/3] overflow-hidden bg-gray-200">
           <img
             src={investment.imageUrl}
@@ -39,7 +40,7 @@ export function InvestmentCard({ investment, onBookmarkChange }: InvestmentCardP
             {investment.name}
           </h3>
           <div className="ml-2">
-            <BookmarkButton 
+            <BookmarkButton
               investmentId={investment.id}
               size="sm"
               onBookmarkChange={onBookmarkChange}
@@ -71,7 +72,9 @@ export function InvestmentCard({ investment, onBookmarkChange }: InvestmentCardP
 
         <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
           <span className="text-gray-600">
-            {investment.type === 'real-estate' ? 'Real Estate' : 'Private Equity'}
+            {investment.type === "real-estate"
+              ? "Real Estate"
+              : "Private Equity"}
           </span>
           <span className="text-green-600 font-medium">
             {investment.projectedReturn}% IRR
@@ -79,5 +82,5 @@ export function InvestmentCard({ investment, onBookmarkChange }: InvestmentCardP
         </div>
       </div>
     </div>
-  )
+  );
 }

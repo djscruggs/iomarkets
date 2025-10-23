@@ -13,6 +13,7 @@
     "db:seed:sql": "sqlite3 ${DATABASE_PATH:-db/iomarkets.db} < db/seed.sql",
     "db:reset": "rm -f db/iomarkets.db && npm run db:init && npm run db:seed",
     "db:migrate:schema": "tsx scripts/migrate-schema-add-description.ts",
+    "db:migrate:images": "tsx scripts/migrate-update-images.ts",
     "db:migrate": "tsx scripts/migrate-to-seed-data.ts",
     "db:generate-full-seed": "node scripts/generate-full-seed.cjs",
     "db:test": "tsx scripts/test-db.ts",
