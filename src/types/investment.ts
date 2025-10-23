@@ -5,7 +5,7 @@ export interface Investment {
   targetRaise: number;
   amountRaised: number;
   imageUrl: string;
-  type: "real-estate" | "private-equity";
+  type: "real-estate" | "private-equity" | "venture-capital";
   location?: string;
   minInvestment: number;
   projectedReturn: number;

@@ -75,6 +75,8 @@ export function InvestmentCard({
           <span className="text-gray-600">
             {investment.type === "real-estate"
               ? "Real Estate"
+              : investment.type === "venture-capital"
+              ? "Venture Capital"
               : "Private Equity"}
           </span>
           <span className="text-green-600 font-medium">

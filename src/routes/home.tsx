@@ -11,7 +11,7 @@ import { Investment } from "../types/investment";
 
 const ITEMS_PER_PAGE = 50;
 
-type FilterType = "all" | "real-estate" | "private-equity";
+type FilterType = "all" | "real-estate" | "private-equity" | "venture-capital";
 
 interface HomeLoaderData {
   investments: Investment[];
@@ -23,7 +23,7 @@ export const meta: MetaFunction = () => {
     {
       name: "description",
       content:
-        "Discover exclusive real estate and private equity investment opportunities on IOMarkets.",
+        "Discover exclusive real estate, private equity, and venture capital investment opportunities on IOMarkets.",
     },
   ];
 };
@@ -74,7 +74,7 @@ export default function Home() {
             Investment Marketplace
           </h1>
           <p className="text-lg text-gray-600">
-            Discover exclusive real estate and private equity opportunities
+            Discover exclusive real estate, private equity, and venture capital opportunities
           </p>
         </div>
 
@@ -110,6 +110,16 @@ export default function Home() {
               }`}
             >
               Private Equity
+            </button>
+            <button
+              onClick={() => handleFilterChange("venture-capital")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
+                filter === "venture-capital"
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
+              }`}
+            >
+              Venture Capital
             </button>
           </div>
           <div className="ml-auto text-sm text-gray-600">

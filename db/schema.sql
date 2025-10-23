@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS investments (
   target_raise INTEGER NOT NULL,
   amount_raised INTEGER NOT NULL,
   image_url TEXT NOT NULL,
-  type TEXT NOT NULL CHECK(type IN ('real-estate', 'private-equity')),
+  type TEXT NOT NULL CHECK(type IN ('real-estate', 'private-equity', 'venture-capital')),
   location TEXT,
   min_investment INTEGER NOT NULL,
   projected_return REAL NOT NULL,
