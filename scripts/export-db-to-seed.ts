@@ -34,10 +34,10 @@ let sql = `-- Seed data for IOMarkets MVP
 // Export investments
 const investments = db.prepare('SELECT * FROM investments ORDER BY id').all();
 sql += `-- Insert all ${investments.length} investments\n`;
-sql += `INSERT INTO investments (id, name, sponsor, target_raise, amount_raised, image_url, type, location, min_investment, projected_return, term) VALUES\n`;
+sql += `INSERT INTO investments (id, name, sponsor, target_raise, amount_raised, image_url, type, location, min_investment, projected_return, term, featured, description) VALUES\n`;
 
 const investmentValues = investments.map((inv: any) => {
-  return `(${escapeSql(inv.id)}, ${escapeSql(inv.name)}, ${escapeSql(inv.sponsor)}, ${inv.target_raise}, ${inv.amount_raised}, ${escapeSql(inv.image_url)}, ${escapeSql(inv.type)}, ${inv.location ? escapeSql(inv.location) : 'NULL'}, ${inv.min_investment}, ${inv.projected_return}, ${escapeSql(inv.term)})`;
+  return `(${escapeSql(inv.id)}, ${escapeSql(inv.name)}, ${escapeSql(inv.sponsor)}, ${inv.target_raise}, ${inv.amount_raised}, ${escapeSql(inv.image_url)}, ${escapeSql(inv.type)}, ${inv.location ? escapeSql(inv.location) : 'NULL'}, ${inv.min_investment}, ${inv.projected_return}, ${escapeSql(inv.term)}, ${inv.featured || 0}, ${inv.description ? escapeSql(inv.description) : 'NULL'})`;
 });
 
 sql += investmentValues.join(',\n') + ';\n\n';
