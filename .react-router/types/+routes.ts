@@ -17,6 +17,9 @@ type Pages = {
   "/dashboard": {
     params: {};
   };
+  "/bookmarks": {
+    params: {};
+  };
   "/investment/:id": {
     params: {
       "id": string;
@@ -41,12 +44,15 @@ type Pages = {
   "/api/chat": {
     params: {};
   };
+  "/api/bookmarks": {
+    params: {};
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/dashboard" | "/investment/:id" | "/investment/:id/due-diligence" | "/sponsor/:sponsorId/deals" | "/sponsor/:sponsorId/deals/:dealId" | "/api/chat";
+    page: "/" | "/dashboard" | "/bookmarks" | "/investment/:id" | "/investment/:id/due-diligence" | "/sponsor/:sponsorId/deals" | "/sponsor/:sponsorId/deals/:dealId" | "/api/chat" | "/api/bookmarks";
   };
   "routes/home.tsx": {
     id: "routes/home";
@@ -55,6 +61,10 @@ type RouteFiles = {
   "routes/dashboard.tsx": {
     id: "routes/dashboard";
     page: "/dashboard";
+  };
+  "routes/bookmarks.tsx": {
+    id: "routes/bookmarks";
+    page: "/bookmarks";
   };
   "routes/investment.$id.tsx": {
     id: "routes/investment.$id";
@@ -76,15 +86,21 @@ type RouteFiles = {
     id: "routes/api.chat";
     page: "/api/chat";
   };
+  "routes/api.bookmarks.ts": {
+    id: "routes/api.bookmarks";
+    page: "/api/bookmarks";
+  };
 };
 
 type RouteModules = {
   "root": typeof import("./src/root.tsx");
   "routes/home": typeof import("./src/routes/home.tsx");
   "routes/dashboard": typeof import("./src/routes/dashboard.tsx");
+  "routes/bookmarks": typeof import("./src/routes/bookmarks.tsx");
   "routes/investment.$id": typeof import("./src/routes/investment.$id.tsx");
   "routes/investment.$id.due-diligence": typeof import("./src/routes/investment.$id.due-diligence.tsx");
   "routes/sponsor.$sponsorId.deals": typeof import("./src/routes/sponsor.$sponsorId.deals.tsx");
   "routes/sponsor.$sponsorId.deals.$dealId": typeof import("./src/routes/sponsor.$sponsorId.deals.$dealId.tsx");
   "routes/api.chat": typeof import("./src/routes/api.chat.ts");
+  "routes/api.bookmarks": typeof import("./src/routes/api.bookmarks.ts");
 };
