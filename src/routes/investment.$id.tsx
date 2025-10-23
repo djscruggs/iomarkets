@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { getInvestmentById } from "../lib/queries";
 import { Investment } from "../types/investment";
+import { BookmarkButton } from "../components/BookmarkButton";
 
 interface InvestmentDetailLoaderData {
   investment: Investment | null;
@@ -147,9 +148,17 @@ export default function InvestmentDetail() {
                     : "Private Equity"}
                 </span>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {investment.name}
-              </h1>
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-3xl font-bold text-gray-900 flex-1">
+                  {investment.name}
+                </h1>
+                <div className="ml-4">
+                  <BookmarkButton 
+                    investmentId={investment.id}
+                    size="md"
+                  />
+                </div>
+              </div>
               <p className="text-xl text-gray-600">{investment.sponsor}</p>
             </div>
 

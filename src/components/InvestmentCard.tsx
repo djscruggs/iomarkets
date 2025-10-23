@@ -1,11 +1,13 @@
 import { Link } from 'react-router'
 import { Investment } from '../types/investment'
+import { BookmarkButton } from './BookmarkButton'
 
 interface InvestmentCardProps {
   investment: Investment
+  onBookmarkChange?: (isBookmarked: boolean) => void
 }
 
-export function InvestmentCard({ investment }: InvestmentCardProps) {
+export function InvestmentCard({ investment, onBookmarkChange }: InvestmentCardProps) {
   const percentRaised = (investment.amountRaised / investment.targetRaise) * 100
 
   const formatCurrency = (amount: number) => {
@@ -18,21 +20,32 @@ export function InvestmentCard({ investment }: InvestmentCardProps) {
   }
 
   return (
-    <Link
-      to={`/investment/${investment.id}`}
-      className="group block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
-    >
-      <div className="aspect-[4/3] overflow-hidden bg-gray-200">
-        <img
-          src={investment.imageUrl}
-          alt={investment.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-      </div>
+    <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+      <Link
+        to={`/investment/${investment.id}`}
+        className="block"
+      >
+        <div className="aspect-[4/3] overflow-hidden bg-gray-200">
+          <img
+            src={investment.imageUrl}
+            alt={investment.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      </Link>
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">
-          {investment.name}
-        </h3>
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-semibold text-gray-900 line-clamp-1 flex-1">
+            {investment.name}
+          </h3>
+          <div className="ml-2">
+            <BookmarkButton 
+              investmentId={investment.id}
+              size="sm"
+              onBookmarkChange={onBookmarkChange}
+            />
+          </div>
+        </div>
         <p className="text-sm text-gray-600 mb-3">{investment.sponsor}</p>
 
         <div className="space-y-2">
@@ -65,6 +78,6 @@ export function InvestmentCard({ investment }: InvestmentCardProps) {
           </span>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }

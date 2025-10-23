@@ -127,9 +127,23 @@ CREATE TABLE IF NOT EXISTS rag_stores (
   FOREIGN KEY (investment_id) REFERENCES investments(id) ON DELETE CASCADE
 );
 
+-- Bookmarks table for user favorites
+CREATE TABLE IF NOT EXISTS bookmarks (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  investment_id TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (investment_id) REFERENCES investments(id) ON DELETE CASCADE,
+  UNIQUE(user_id, investment_id)
+);
+
 -- RAG Indexes
 CREATE INDEX IF NOT EXISTS idx_investment_data_stores_status ON investment_data_stores(status);
 CREATE INDEX IF NOT EXISTS idx_indexed_documents_investment_id ON indexed_documents(investment_id);
 CREATE INDEX IF NOT EXISTS idx_indexed_documents_status ON indexed_documents(status);
 CREATE INDEX IF NOT EXISTS idx_indexed_documents_content ON indexed_documents(content_length);
 CREATE INDEX IF NOT EXISTS idx_rag_stores_status ON rag_stores(status);
+
+-- Bookmark Indexes
+CREATE INDEX IF NOT EXISTS idx_bookmarks_user_id ON bookmarks(user_id);
+CREATE INDEX IF NOT EXISTS idx_bookmarks_investment_id ON bookmarks(investment_id);

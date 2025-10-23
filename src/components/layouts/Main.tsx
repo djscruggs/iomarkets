@@ -6,6 +6,7 @@ import {
 } from "@clerk/clerk-react";
 import { Link } from "react-router";
 import { ReactNode } from "react";
+import { FaBookmark } from "react-icons/fa";
 
 interface LayoutProps {
   children: ReactNode;
@@ -28,7 +29,16 @@ export function Layout({ children }: LayoutProps) {
               />
               <span>IoMarkets <span className="font-normal text-sm">&reg;</span></span>
             </Link>
-            <div>
+            <div className="flex items-center gap-4">
+              <SignedIn>
+                <Link
+                  to="/bookmarks"
+                  className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors cursor-pointer"
+                >
+                  <FaBookmark className="w-5 h-5" />
+                  <span className="hidden sm:inline">Bookmarks</span>
+                </Link>
+              </SignedIn>
               <SignedOut>
                 <SignInButton mode="modal">
                   <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer">
