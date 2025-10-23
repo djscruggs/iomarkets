@@ -11,4 +11,5 @@ export interface Investment {
   projectedReturn: number;
   term: string;
   featured: boolean;
+  description?: string;
 }

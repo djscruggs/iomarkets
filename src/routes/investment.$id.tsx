@@ -243,20 +243,26 @@ export default function InvestmentDetail() {
                 Investment Overview
               </h3>
               <div className="prose max-w-none text-gray-600">
-                <p className="mb-4">
-                  This is a{" "}
-                  {investment.type === "real-estate"
-                    ? "real estate"
-                    : "private equity"}{" "}
-                  investment opportunity managed by {investment.sponsor}. The
-                  fund is targeting a raise of{" "}
-                  {formatCurrency(investment.targetRaise)} with a projected IRR
-                  of {investment.projectedReturn}% over a {investment.term}{" "}
-                  investment period.
-                </p>
-                <p>
-                  Minimum investment: {formatCurrency(investment.minInvestment)}
-                </p>
+                {investment.description ? (
+                  <p className="mb-4 whitespace-pre-line">{investment.description}</p>
+                ) : (
+                  <>
+                    <p className="mb-4">
+                      This is a{" "}
+                      {investment.type === "real-estate"
+                        ? "real estate"
+                        : "private equity"}{" "}
+                      investment opportunity managed by {investment.sponsor}. The
+                      fund is targeting a raise of{" "}
+                      {formatCurrency(investment.targetRaise)} with a projected IRR
+                      of {investment.projectedReturn}% over a {investment.term}{" "}
+                      investment period.
+                    </p>
+                    <p>
+                      Minimum investment: {formatCurrency(investment.minInvestment)}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
 

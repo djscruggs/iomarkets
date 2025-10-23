@@ -16,7 +16,8 @@ export function getAllInvestments(): Investment[] {
       min_investment as minInvestment,
       projected_return as projectedReturn,
       term,
-      featured
+      featured,
+      description
     FROM investments
     ORDER BY featured DESC, created_at DESC
   `);
@@ -36,7 +37,8 @@ export function getInvestmentById(id: string): Investment | undefined {
       min_investment as minInvestment,
       projected_return as projectedReturn,
       term,
-      featured
+      featured,
+      description
     FROM investments
     WHERE id = ?
   `);
@@ -58,7 +60,8 @@ export function getInvestmentsByType(
       min_investment as minInvestment,
       projected_return as projectedReturn,
       term,
-      featured
+      featured,
+      description
     FROM investments
     WHERE type = ?
     ORDER BY featured DESC, created_at DESC
@@ -148,7 +151,8 @@ export function searchInvestments(searchTerm: string): Investment[] {
       min_investment as minInvestment,
       projected_return as projectedReturn,
       term,
-      featured
+      featured,
+      description
     FROM investments
     WHERE name LIKE ? OR sponsor LIKE ? OR location LIKE ?
     ORDER BY featured DESC, created_at DESC
@@ -170,7 +174,8 @@ export function getTopPerformingInvestments(limit: number = 10): Investment[] {
       min_investment as minInvestment,
       projected_return as projectedReturn,
       term,
-      featured
+      featured,
+      description
     FROM investments
     ORDER BY featured DESC, projected_return DESC
     LIMIT ?

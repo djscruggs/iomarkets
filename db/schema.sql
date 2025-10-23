@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS investments (
   term TEXT NOT NULL,
   featured INTEGER DEFAULT 0 CHECK(featured IN (0, 1)),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  description TEXT
 );
 
 -- Sponsors table
