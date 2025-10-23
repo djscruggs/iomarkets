@@ -18,7 +18,7 @@ const imageMapping = {
   '9066524200': 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&auto=format&fit=crop', // Baltic BioAlgae - renewable energy
   '9362715715': 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=800&auto=format&fit=crop', // CarbonVault - carbon capture
   '29236478765': 'https://images.unsplash.com/photo-1559302504-64aae6ca6b6d?w=800&auto=format&fit=crop', // Verdant Lithium - mining
-  '8177377321': 'https://images.unsplash.com/photo-1545259742-24f2d6e0f593?w=800&auto=format&fit=crop', // Boreal BioFuels - biofuel plant
+  '8177377321': 'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=800&auto=format&fit=crop', // Boreal BioFuels - biofuel plant
   '7016135307': 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&auto=format&fit=crop', // NordicH2 - hydrogen energy
   '3294037634': 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&auto=format&fit=crop', // AlpenTherm - geothermal
   '12316292917': 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&auto=format&fit=crop', // AnatoliaTherm - geothermal
@@ -84,7 +84,7 @@ const imageMapping = {
   '3033536994': 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=800&auto=format&fit=crop', // TouchReal - VR/AR
   '8584995136': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&auto=format&fit=crop', // RecoMind - retail AI
   '19981888067': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&auto=format&fit=crop', // RecoMind - lending
-  '3033418206': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd86?w=800&auto=format&fit=crop', // GlideFleet - micromobility
+  '3033418206': 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop', // GlideFleet - micromobility
   '19696043904': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop', // Bastion Security - cybersecurity
   '10963331673': 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop', // CredenceChain - blockchain
   '3033418204': 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop', // Liquid Spaces - proptech

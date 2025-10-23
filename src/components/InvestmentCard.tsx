@@ -24,22 +24,23 @@ export function InvestmentCard({
   };
 
   return (
-    <div className="group cursor-pointer bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      <Link to={`/investment/${investment.id}`} className="block">
-        <div className="aspect-[4/3] overflow-hidden bg-gray-200">
-          <img
-            src={investment.imageUrl}
-            alt={investment.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      </Link>
+    <Link
+      to={`/investment/${investment.id}`}
+      className="group block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+    >
+      <div className="aspect-[4/3] overflow-hidden bg-gray-200">
+        <img
+          src={investment.imageUrl}
+          alt={investment.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+      </div>
       <div className="p-4">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-semibold text-gray-900 line-clamp-1 flex-1">
             {investment.name}
           </h3>
-          <div className="ml-2">
+          <div className="ml-2" onClick={(e) => e.preventDefault()}>
             <BookmarkButton
               investmentId={investment.id}
               size="sm"
@@ -81,6 +82,6 @@ export function InvestmentCard({
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
