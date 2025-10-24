@@ -240,29 +240,51 @@ fly open
 
 ## Database Management
 
-### Updating Seed Data
+### Fresh Database Setup (New Deployments)
 
-If you modify the mock data in `src/data/`, regenerate the seed.sql file:
+The database seed file (`db/seed.sql`) contains the complete schema and all 101 investments with:
+- All investment types including venture capital
+- 17 sponsors
+- Holiday Terrace (#51) with 16 due diligence assets (6 PDFs + 10 photos)
+
+To initialize a fresh database:
 
 ```bash
-# 1. Regenerate seed.sql from TypeScript mock data
-npm run db:generate-seed
+fly ssh console
+cd /app
+
+# Single command to create and seed database
+sqlite3 /data/iomarkets.db < db/seed.sql
+
+# Verify
+sqlite3 /data/iomarkets.db "SELECT COUNT(*) FROM investments;"
+# Should show: 101
+
+exit
+```
+
+**Note:** RAG tables (`investment_data_stores`, `indexed_documents`, `rag_stores`) are created empty. You need to index documents separately (see [RAG System Setup](#rag-system-setup)).
+
+### Updating Seed Data
+
+The seed file is now generated from production data:
+
+```bash
+# 1. Export from production database
+fly ssh console -C "sqlite3 /data/iomarkets.db .dump" > production-backup.sql
+
+# OR regenerate locally from your database
+npm run db:export:full
 
 # 2. Commit the updated seed.sql
 git add db/seed.sql
-git commit -m "Update seed data"
+git commit -m "Update seed data from production"
 
-# 3. Redeploy
+# 3. Deploy
 fly deploy
-
-# 4. Force reseed the database (WARNING: deletes existing data!)
-fly ssh console
-cd /app
-./scripts/deploy-db.sh --force
-# Type 'y' to confirm you want to delete and reseed
 ```
 
-**Note:** The `--force` flag is required to reseed an existing database. The seed.sql file is auto-generated and should not be edited manually.
+**Important:** The seed file includes schema + data. No migrations needed for fresh deployments!
 
 ### Database Operations
 
@@ -289,38 +311,47 @@ exit
 
 1. Enable required Google Cloud APIs:
    - Vertex AI API
-   - Discovery Engine API
+   - Discovery Engine API (for RAG grounding)
    - Cloud Storage API
+   - Document AI API (for PDF text extraction)
 
 2. Grant service account permissions:
    - `storage.admin` - For Cloud Storage
    - `discoveryengine.admin` - For Discovery Engine
    - `aiplatform.user` - For Vertex AI
+   - `documentai.admin` - For Document AI
 
-### Index Documents
+### Index Documents for AI Chat
 
-After deployment, index documents for the RAG system:
+**Important:** The database seed includes the schema for RAG tables, but they are empty. You must index documents for each investment to enable AI chat.
+
+For Holiday Terrace (Investment #51):
 
 ```bash
 # SSH into production
 fly ssh console
 cd /app
 
-# Index a specific investment (e.g., investment ID 51)
-npm run rag:index 51
+# Index using the hybrid approach (recommended)
+npm run genai:index-deal-51-hybrid
+
+# OR use other indexing methods
+npm run genai:index-deal-51-ragstore  # RagStore only
+npm run genai:index-deal-51           # Discovery Engine only
 
 # Check indexing status
-npm run rag:status 51
+sqlite3 /data/iomarkets.db "SELECT status FROM investment_data_stores WHERE investment_id='51';"
+# Should show: ready
 
 # Exit
 exit
 ```
 
-**Indexing takes 5-30 minutes** as Google's Discovery Engine:
-1. Extracts text from PDFs
-2. Chunks content
-3. Creates embeddings
-4. Builds search index
+**Indexing takes 5-15 minutes** as the system:
+1. Uploads PDFs to Google Cloud Storage
+2. Extracts text using Document AI
+3. Stores content in SQLite for fast retrieval
+4. Creates grounding data for Gemini
 
 ### Verify RAG System
 
