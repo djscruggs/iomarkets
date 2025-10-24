@@ -57,20 +57,35 @@ function storeDocumentCache(
   }>
 ): void {
   const db = getDb();
-  
+
   try {
     // Store in indexed_documents table for compatibility
     const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO indexed_documents 
+      INSERT OR REPLACE INTO indexed_documents
       (id, investment_id, asset_id, gcs_uri, content, content_length, status, indexed_at)
       VALUES (?, ?, ?, ?, ?, ?, 'indexed', datetime('now'))
     `);
-    
+
+    // Look up asset by URL to get the real asset_id
+    const lookupAsset = db.prepare(`
+      SELECT id FROM due_diligence_assets
+      WHERE investment_id = ? AND name = ?
+    `);
+
     for (const doc of documents) {
+      // Remove .pdf extension from title to match asset name
+      const assetName = doc.title.replace(/\.pdf$/i, '');
+      const asset = lookupAsset.get(investmentId, assetName) as { id: string } | undefined;
+
+      if (!asset) {
+        console.warn(`⚠️  No asset found for "${assetName}", skipping indexed_documents insert`);
+        continue;
+      }
+
       insertStmt.run(
         `ht-${doc.id}`,
         investmentId,
-        doc.id,
+        asset.id,  // Use the actual asset ID from the database
         `/duediligence/holidayterrace/${doc.title}`,
         doc.content,
         doc.contentLength
